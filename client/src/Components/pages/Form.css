@@ -1,3 +1,4 @@
+
 .wrapper {
     width: 420px;
     background: transparent;
@@ -94,4 +95,10 @@
 
 .register-link p a:hover {
     text-decoration: underline;
+}
+
+.email-prompt {
+    font-size: 18px;
+    padding-top: 20px;
+    text-align: center;
 }
