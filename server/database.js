@@ -15,3 +15,12 @@ export async function getUsers() {
     const [rows] = await pool.query('SELECT * FROM users')
     return rows
 }
+
+export async function getActivitiesByTypes(types) {
+    // create a string of question marks for the number of types
+    // e.g. types = ['hiking', 'biking'] => temp = '?,?'
+    const temp = types.map(() => '?').join(',')
+    // SELECT name FROM activities WHERE type IN (?,?)
+    const [rows] = await pool.query(`SELECT name FROM activities WHERE type IN (${temp})`, types)
+    return rows
+}

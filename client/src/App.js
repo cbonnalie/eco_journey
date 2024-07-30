@@ -1,17 +1,92 @@
 import React, {useEffect, useState} from "react";
-import "./App.css";
-import { AppRoutes } from "./routes";
+import {Routes, Route} from "react-router-dom";
+import Login from "./Components/pages/Login";
+import Register from "./Components/pages/Register";
+import ForgotPassword from "./Components/pages/ForgotPassword";
+import Home from "./Components/pages/Home";
+import Itinerary from "./Components/pages/Itinerary";
 
-function App() {
+/**
+ * The main component for the application. It is responsible for rendering
+ * the different pages based on the URL path. It also manages the form data
+ * that is passed down to the Home and Itinerary components.
+ */
+const App = () => {
 
+    /**
+     * This state holds data from the form users fill out
+     * on the home page. It is passed down to the Itinerary component.
+     */
+    const [formData, setFormData] = useState({
+        activities: [],
+        budget: "",
+        location: ""
+    })
+
+    /**
+     * Hook runs when the component mounts. It sets the title of the page
+     * and retrieves the form data from local storage.
+     */
     useEffect(() => {
         document.title = "Eco Journey"
+        const savedFormData = JSON.parse(localStorage.getItem("formData"))
+        if (savedFormData) {
+            setFormData(savedFormData)
+        }
     }, [])
-    
+
+    /**
+     * Hook runs when the form data changes. It saves the form data to local storage.
+     */
+    useEffect(() => {
+        // save the form data to local storage
+        localStorage.setItem("formData", JSON.stringify(formData))
+    }, [formData]);
+
+    /**
+     * Handles input changes for the form on the home page.
+     * @param e - the event object
+     */
+    const handleInputChange = (e) => {
+        // destructure the name and value from the target
+        const {name, value} = e.target
+
+        // if the target is a checkbox, update the activities array
+        if (e.target.type === "checkbox") {
+            setFormData({
+                ...formData,
+                activities: e.target.checked
+                    ? [...formData.activities, value]
+                    : formData.activities.filter(activity => activity !== value)
+            })
+        } else { // if the target is not a checkbox, update the form data
+            setFormData({...formData, [name]: value})
+            console.log(formData)
+        }
+    }
+
+    /**
+     * Renders the app through the use of Routes. Each Route is a different page.
+     * @returns {JSX.Element}
+     */
     return (
-        <div>
-            <AppRoutes />
-        </div>
+        <Routes>
+            <Route path="/" element={<Login/>}/>
+
+            <Route path="/forgot-password" element={<ForgotPassword/>}/>
+
+            <Route path="/register" element={<Register/>}/>
+
+            <Route path="/home" element={
+                <Home
+                    formData={formData}
+                    handleInputChange={handleInputChange}
+                    setFormData={setFormData}
+                />}
+            />
+
+            <Route path="/itinerary" element={<Itinerary formData={formData}/>}/>
+        </Routes>
     )
 }
 

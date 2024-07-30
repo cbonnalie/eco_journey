@@ -1,7 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import {
-    getUsers
+    getUsers,
+    getActivitiesByTypes
 } from './database.js'
 
 const app = express()
@@ -17,12 +18,6 @@ app.get("/api", async (req, res) => {
     res.json({ message: "API is working" });
 })
 
-// error handling
-app.use((err, req, res, next) => {
-    console.error(err.stack)
-    res.status(500).send('Something broke!')
-})
-
 /**
  * Get all users
  */
@@ -30,5 +25,15 @@ app.get("/api/users", async (req, res) => {
     const users = await getUsers()
     res.send(users)
 })
+
+/**
+ * Get activities by type. The types are passed as a query parameter
+ * e.g. /api/activities?types=hiking,biking
+ */
+app.get("/api/activities", async (req, res) => {
+    const types = req.query.types.split(',');
+    const activities = await getActivitiesByTypes(types);
+    res.send(activities);
+});
 
 app.listen(5000, () => {console.log("Server started on port 5000")})
