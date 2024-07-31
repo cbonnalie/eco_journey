@@ -2,7 +2,8 @@ import express from 'express'
 import cors from 'cors'
 import {
     getUsers,
-    getActivitiesByTypes
+    getActivitiesByTypes, 
+    getLocations
 } from './database.js'
 
 const app = express()
@@ -15,11 +16,12 @@ app.use(express.json())
 // test route
 app.get("/api", async (req, res) => {
     console.log("/api route hit");
-    res.json({ message: "API is working" });
+    res.json({message: "API is working"});
 })
 
 /**
  * Get all users
+ * TODO: delete
  */
 app.get("/api/users", async (req, res) => {
     const users = await getUsers()
@@ -36,4 +38,14 @@ app.get("/api/activities", async (req, res) => {
     res.send(activities);
 });
 
-app.listen(5000, () => {console.log("Server started on port 5000")})
+/**
+ * Get all locations ordered by state, then city
+ */
+app.get("/api/locations", async (req, res) => {
+    const locations = await getLocations()
+    res.json(locations)
+})
+
+app.listen(5000, () => {
+    console.log("Server started on port 5000")
+})

@@ -1,9 +1,10 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import $ from "jquery";
 import Header from "../Assets/Header";
 
 /**
  * Activities to choose from.
+ * TODO: replace with fetch from backend
  */
 const activities = [
     "Entertainment", "Outdoor", "Cultural", "Educational", "Leisure", "Historic"
@@ -17,20 +18,6 @@ const prices = [
 ]
 
 /**
- * Each state in the US of A.
- */
-const states = [
-    "", "AL", "AK", "AZ", "AR", "CA", "CO", "CT",
-    "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA",
-    "KS", "KY", "LA", "ME", "MD", "MA", "MI",
-    "MN", "MS", "MO", "MT", "NE", "NV", "NH",
-    "NJ", "NM", "NY", "NC", "ND", "OH",
-    "OK", "OR", "PA", "RI", "SC", "SD",
-    "TN", "TX", "UT", "VT", "VA", "WA", "WV",
-    "WI", "WY"
-]
-
-/**
  * Renders the form that users fill out to get their itinerary.
  *
  * @param formData - the form data
@@ -40,6 +27,8 @@ const states = [
  */
 const Home = ({formData, handleInputChange, setFormData}) => {
 
+    const [locations, setLocations] = useState([])
+    
     /**
      * Runs when the component mounts. It resets the form data
      * both in the state and in local storage.
@@ -92,6 +81,20 @@ const Home = ({formData, handleInputChange, setFormData}) => {
         })
     }, [])
 
+    /**
+     * Fetch the locations from the backend.
+     */
+    useEffect(() => {
+        const fetchLocations = async () => {
+            const response = await fetch("/api/locations")
+            const data = await response.json()
+            setLocations(data)
+            console.log("Locations fetched: ", locations)
+        }
+
+        void fetchLocations()
+    }, [])
+    
     /**
      * If the form is valid, redirect to the itinerary page.
      * Otherwise, alert the user to fill out all fields.
@@ -151,13 +154,14 @@ const Home = ({formData, handleInputChange, setFormData}) => {
 
     const renderLocationForm = () => (
         <div className={"option"}>
-            <h1>Which state are you in?</h1>
+            <h1>What is your location?</h1>
             <select name="location" onChange={handleInputChange}>
-                {states.map((state, index) => (
+                <option value={""}>Select a location</option>
+                {locations.map((location, index) => (
                     <option
                         key={index}
-                        value={state}>
-                        {state}
+                        value={location}>
+                        {location}
                     </option>
                 ))}
             </select>

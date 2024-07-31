@@ -1,11 +1,20 @@
 import React, {useEffect, useState} from "react"
+import calculateDistance from "../Tools/CalculateDistance"
 
+/**
+ * Displays the itineraries based on the form data.
+ * @param formData - the form data
+ * @returns {Element} - the itineraries
+ */
 const Itinerary = ({formData}) => {
 
     const [activities, setActivities] = useState([])
 
+    /**
+     * Fetch activities based on the form data.
+     * Will be replaced with something more comprehensive.
+     */
     useEffect(() => {
-        // Fetch activities based on the selected types
         const fetchActivities = async () => {
             try {
                 // Convert the array of activities to a comma-separated string
