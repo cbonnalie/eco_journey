@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import $ from "jquery";
-import Header from "../Assets/Header";
+import Header from "../assets/Header";
 
 /**
  * Activities to choose from.
@@ -26,13 +26,14 @@ const prices = [
  * @param setLocations
  * @returns {Element} - the form
  */
-const Home = ({formData, setFormData, locations, setLocations}) => {
+const Home = ({formData, setFormData, locations}) => {
     
     /**
      * Runs when the component mounts. It resets the form data
      * both in the state and in local storage.
      */
     useEffect(() => {
+        console.log("resetting form data...")
         const resetFormData = {
             activities: [],
             budget: "",
@@ -43,17 +44,22 @@ const Home = ({formData, setFormData, locations, setLocations}) => {
                 longitude: ""
             }
         }
-        
-        const resetLocations = []
-        
         // reset form data in state
         setFormData(resetFormData)
-        setLocations(resetLocations)
         // save the reset form to local storage
         localStorage.setItem("formData", JSON.stringify(resetFormData))
-        localStorage.setItem("locations", JSON.stringify(resetLocations))
-        console.log("Form Data Reset")
-    }, [setFormData, setLocations]);
+        console.log("form data reset")
+    }, [setFormData])
+        
+    
+    // useEffect(() => {
+    //     console.log("resetting location data...")
+    //     // reset locations in state
+    //     setLocations([])
+    //     // save the reset locations to local storage
+    //     localStorage.setItem("locations", JSON.stringify([]))
+    //     console.log("location data reset")
+    // }, [setLocations]);
 
     /**
      * Handles the functionality of the next, previous, and submit buttons
@@ -65,7 +71,7 @@ const Home = ({formData, setFormData, locations, setLocations}) => {
         options.hide().eq(0).show()
         $("#prev").prop("disabled", true)
         $("#submit").hide()
-        
+
         // update buttons based on state of the form
         const updateButtonStates = (currentIndex) => {
             $("#prev").prop("disabled", currentIndex === 0)
@@ -91,20 +97,18 @@ const Home = ({formData, setFormData, locations, setLocations}) => {
     }, [])
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         // if the target is a checkbox, update the activities array
         if (e.target.type === "checkbox") {
             handleCheckboxChange(e, value)
-        }
-        else if (name === "location") {
+        } else if (name === "location") {
             const [city, state, latitude, longitude] = value.split(",");
             setFormData({
                 ...formData,
                 location: {city, state, latitude, longitude}
             })
-        } 
-        else {
-            setFormData({ ...formData, [name]: value });
+        } else {
+            setFormData({...formData, [name]: value});
         }
     };
 
@@ -116,8 +120,8 @@ const Home = ({formData, setFormData, locations, setLocations}) => {
                 : formData.activities.filter(activity => activity !== value)
         })
     }
-    
-    
+
+
     /**
      * If the form is valid, redirect to the itinerary page.
      * Otherwise, alert the user to fill out all fields.
@@ -129,7 +133,7 @@ const Home = ({formData, setFormData, locations, setLocations}) => {
             window.location.href = "/itinerary";
         } else {
             alert("Please fill out all fields")
-            console.log(formData)
+            console.log("form submitted: ", formData)
         }
     }
 
@@ -141,7 +145,7 @@ const Home = ({formData, setFormData, locations, setLocations}) => {
     }
 
     /* Render Functions */
-    
+
     const renderActivitiesForm = () => (
         <div className={"option"}>
             <h1>Select your preferred activities</h1>

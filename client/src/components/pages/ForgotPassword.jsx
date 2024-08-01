@@ -1,6 +1,6 @@
 import React from "react";
 import {FaUser} from "react-icons/fa";
-import "./Form.css";
+import "../styles/Form.css";
 
 const ForgotPassword = () => {
     return (

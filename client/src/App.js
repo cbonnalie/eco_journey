@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {Routes, Route} from "react-router-dom";
-import Login from "./Components/pages/Login";
-import Register from "./Components/pages/Register";
-import ForgotPassword from "./Components/pages/ForgotPassword";
-import Home from "./Components/pages/Home";
-import Itinerary from "./Components/pages/Itinerary";
+import Login from "./components/pages/Login";
+import Register from "./components/pages/Register";
+import ForgotPassword from "./components/pages/ForgotPassword";
+import Home from "./components/pages/Home";
+import Itinerary from "./components/pages/Itinerary";
+import {fetchLocations} from "./components/utils/fetchers";
 
 /**
  * The main component for the application. It is responsible for rendering
@@ -31,23 +32,6 @@ const App = () => {
     const [locations, setLocations] = useState([])
     
     /**
-     * Fetch the locations from the backend.
-     */
-    useEffect(() => {
-        const fetchLocations = async () => {
-            const response = await fetch("/api/locations")
-            const data = await response.json()
-            const array = data.map(({city, state, latitude, longitude}) => ({
-               city, state, latitude, longitude
-            }))
-            setLocations(array)
-            localStorage.setItem("locations", JSON.stringify(array))
-            console.log("Locations fetched: ", array)
-        }
-        void fetchLocations()
-    }, [])
-
-    /**
      * Hook runs when the component mounts. It sets the title of the page
      * and retrieves the form data from local storage.
      */
@@ -66,6 +50,10 @@ const App = () => {
         // save the form data to local storage
         localStorage.setItem("formData", JSON.stringify(formData))
     }, [formData]);
+
+    useEffect(() => {
+        void fetchLocations(setLocations)
+    }, []);
     
     /**
      * Renders the app through the use of Routes. Each Route is a different page.
@@ -84,7 +72,6 @@ const App = () => {
                     formData={formData}
                     setFormData={setFormData}
                     locations={locations}
-                    setLocations={setLocations}
                 />}
             />
 
@@ -99,24 +86,3 @@ const App = () => {
 }
 
 export default App
-
-// const [backendUsers, setBackendUsers] = useState([{}])
-
-// useEffect(() => {
-//     Promise.all([
-//         fetch('/api/users')
-//             .then(res => res.json())
-//             .then(data => setBackendUsers(data))
-//     ]).catch(err => console.error("There was an error fetching the data: ", err))
-// }, [])
-//
-// const renderUsers = () => {
-//     return backendUsers.map((user, index) => {
-//         return (
-//             <div key={index}>
-//                 <h3>{user.username}</h3>
-//                 <p>{user.email}</p>
-//             </div>
-//         )
-//     })
-// }

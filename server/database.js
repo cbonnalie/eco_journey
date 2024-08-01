@@ -49,3 +49,12 @@ export async function getLocations() {
         `)
     return rows
 }
+
+export async function getAirplaneCosts() {
+    const [rows] = await pool.query(`
+        SELECT cost_per_mi, emissions_per_mi
+        FROM transportation_types
+        WHERE name = 'Airplane'
+        `)
+    return rows
+}
