@@ -21,6 +21,7 @@ const states = [
     "WI", "WY"
 ];
 
+
 const Home = ({ formData, handleInputChange, setFormData }) => {
     const [currentIndex, setCurrentIndex] = useState(0); // State for current index
 
