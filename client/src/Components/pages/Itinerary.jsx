@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from "react"
 import calculateDistance from "../Tools/CalculateDistance"
+import "../pages/itin.css"
 
 /**
  * Displays the itineraries based on the form data.
  * @param formData - the form data
+ * @param locations
  * @returns {Element} - the itineraries
  */
-const Itinerary = ({formData}) => {
+const Itinerary = ({formData, locations}) => {
 
     const [activities, setActivities] = useState([])
 
@@ -43,10 +45,24 @@ const Itinerary = ({formData}) => {
 
     return (
         <div>
-            <h1>Finding Your Next Adventure...</h1>
-            <p>Activities: {activities.map(a => a.name).join(", ")}</p>
-            <p>Budget: ${formData.budget}</p>
-            <p>Location: {formData.location}</p>
+            <h1>Finding Your Next Adventure</h1>
+            <h2>Activities</h2>
+            <p>{activities.map(a => a.name).join(", ")}</p>
+            <h2>Budget</h2>
+            <p>${formData.budget}</p>
+            <h2>Location</h2>
+            <p><b>City: </b>{formData.location.city}</p>
+            <p><b>State: </b>{formData.location.state}</p>
+            <p><b>Latitude: </b>{formData.location.latitude}</p>
+            <p><b>Longitude: </b>{formData.location.longitude}</p>
+            <br/>
+
+            {locations.map((location, index) => (
+                <div key={index}>
+                    <p><b>Distance to {location.city}, {location.state}</b></p>
+                    <p>{calculateDistance(location.latitude, location.longitude, formData.location.latitude, formData.location.longitude).toFixed(2)} miles</p>
+                </div>
+            ))}
         </div>
     )
 }

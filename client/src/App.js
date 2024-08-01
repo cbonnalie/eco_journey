@@ -20,8 +20,32 @@ const App = () => {
     const [formData, setFormData] = useState({
         activities: [],
         budget: "",
-        location: ""
+        location: {
+            city: "",
+            state: "",
+            latitude: "",
+            longitude: ""
+        }
     })
+
+    const [locations, setLocations] = useState([])
+    
+    /**
+     * Fetch the locations from the backend.
+     */
+    useEffect(() => {
+        const fetchLocations = async () => {
+            const response = await fetch("/api/locations")
+            const data = await response.json()
+            const array = data.map(({city, state, latitude, longitude}) => ({
+               city, state, latitude, longitude
+            }))
+            setLocations(array)
+            localStorage.setItem("locations", JSON.stringify(array))
+            console.log("Locations fetched: ", array)
+        }
+        void fetchLocations()
+    }, [])
 
     /**
      * Hook runs when the component mounts. It sets the title of the page
@@ -42,29 +66,7 @@ const App = () => {
         // save the form data to local storage
         localStorage.setItem("formData", JSON.stringify(formData))
     }, [formData]);
-
-    /**
-     * Handles input changes for the form on the home page.
-     * @param e - the event object
-     */
-    const handleInputChange = (e) => {
-        // destructure the name and value from the target
-        const {name, value} = e.target
-
-        // if the target is a checkbox, update the activities array
-        if (e.target.type === "checkbox") {
-            setFormData({
-                ...formData,
-                activities: e.target.checked
-                    ? [...formData.activities, value]
-                    : formData.activities.filter(activity => activity !== value)
-            })
-        } else { // if the target is not a checkbox, update the form data
-            setFormData({...formData, [name]: value})
-            console.log(formData)
-        }
-    }
-
+    
     /**
      * Renders the app through the use of Routes. Each Route is a different page.
      * @returns {JSX.Element}
@@ -80,12 +82,18 @@ const App = () => {
             <Route path="/home" element={
                 <Home
                     formData={formData}
-                    handleInputChange={handleInputChange}
                     setFormData={setFormData}
+                    locations={locations}
+                    setLocations={setLocations}
                 />}
             />
 
-            <Route path="/itinerary" element={<Itinerary formData={formData}/>}/>
+            <Route path="/itinerary" element={
+                <Itinerary 
+                    formData={formData} 
+                    locations={locations}
+                />}
+            />
         </Routes>
     )
 }

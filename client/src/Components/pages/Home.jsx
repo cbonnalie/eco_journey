@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import $ from "jquery";
 import Header from "../Assets/Header";
 
@@ -21,13 +21,12 @@ const prices = [
  * Renders the form that users fill out to get their itinerary.
  *
  * @param formData - the form data
- * @param handleInputChange - the function to handle input changes
  * @param setFormData - the function to set the form data
+ * @param locations
+ * @param setLocations
  * @returns {Element} - the form
  */
-const Home = ({formData, handleInputChange, setFormData}) => {
-
-    const [locations, setLocations] = useState([])
+const Home = ({formData, setFormData, locations, setLocations}) => {
     
     /**
      * Runs when the component mounts. It resets the form data
@@ -37,14 +36,24 @@ const Home = ({formData, handleInputChange, setFormData}) => {
         const resetFormData = {
             activities: [],
             budget: "",
-            location: ""
+            location: {
+                city: "",
+                state: "",
+                latitude: "",
+                longitude: ""
+            }
         }
+        
+        const resetLocations = []
+        
         // reset form data in state
         setFormData(resetFormData)
+        setLocations(resetLocations)
         // save the reset form to local storage
         localStorage.setItem("formData", JSON.stringify(resetFormData))
+        localStorage.setItem("locations", JSON.stringify(resetLocations))
         console.log("Form Data Reset")
-    }, [setFormData]);
+    }, [setFormData, setLocations]);
 
     /**
      * Handles the functionality of the next, previous, and submit buttons
@@ -81,19 +90,33 @@ const Home = ({formData, handleInputChange, setFormData}) => {
         })
     }, [])
 
-    /**
-     * Fetch the locations from the backend.
-     */
-    useEffect(() => {
-        const fetchLocations = async () => {
-            const response = await fetch("/api/locations")
-            const data = await response.json()
-            setLocations(data)
-            console.log("Locations fetched: ", locations)
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        // if the target is a checkbox, update the activities array
+        if (e.target.type === "checkbox") {
+            handleCheckboxChange(e, value)
         }
+        else if (name === "location") {
+            const [city, state, latitude, longitude] = value.split(",");
+            setFormData({
+                ...formData,
+                location: {city, state, latitude, longitude}
+            })
+        } 
+        else {
+            setFormData({ ...formData, [name]: value });
+        }
+    };
 
-        void fetchLocations()
-    }, [])
+    const handleCheckboxChange = (e, value) => {
+        setFormData({
+            ...formData,
+            activities: e.target.checked
+                ? [...formData.activities, value]
+                : formData.activities.filter(activity => activity !== value)
+        })
+    }
+    
     
     /**
      * If the form is valid, redirect to the itinerary page.
@@ -160,8 +183,8 @@ const Home = ({formData, handleInputChange, setFormData}) => {
                 {locations.map((location, index) => (
                     <option
                         key={index}
-                        value={location}>
-                        {location}
+                        value={`${location["city"]},${location["state"]},${location["latitude"]},${location["longitude"]}`}>
+                        {location["city"]}, {location["state"]}
                     </option>
                 ))}
             </select>

@@ -43,9 +43,9 @@ export async function getActivitiesByTypes(types) {
  */
 export async function getLocations() {
     const [rows] = await pool.query(`
-        SELECT city, state
+        SELECT city, state, latitude, longitude
         FROM locations
         ORDER BY state, city
         `)
-    return rows.map(row => `${row["city"]}, ${row["state"]}`)
+    return rows
 }
