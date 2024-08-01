@@ -49,4 +49,5 @@ header {
     color: white;
     padding: .25rem 0;
     text-align: center;
+    z-index: 9999;
 }
