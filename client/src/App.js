@@ -14,10 +14,8 @@ import {fetchLocations} from "./components/utils/fetchers";
  */
 const App = () => {
 
-    /**
-     * This state holds data from the form users fill out
-     * on the home page. It is passed down to the Itinerary component.
-     */
+    /* This state holds data from the form users fill out
+    on the home page. It is passed down to the Itinerary component.*/
     const [formData, setFormData] = useState({
         activities: [],
         budget: "",
@@ -30,11 +28,9 @@ const App = () => {
     })
 
     const [locations, setLocations] = useState([])
-    
-    /**
-     * Hook runs when the component mounts. It sets the title of the page
-     * and retrieves the form data from local storage.
-     */
+
+    /* Hook runs when the component mounts. It sets the title of the page
+    and retrieves the form data from local storage.*/
     useEffect(() => {
         document.title = "Eco Journey"
         const savedFormData = JSON.parse(localStorage.getItem("formData"))
@@ -54,7 +50,7 @@ const App = () => {
     useEffect(() => {
         void fetchLocations(setLocations)
     }, []);
-    
+
     /**
      * Renders the app through the use of Routes. Each Route is a different page.
      * @returns {JSX.Element}
@@ -76,8 +72,8 @@ const App = () => {
             />
 
             <Route path="/itinerary" element={
-                <Itinerary 
-                    formData={formData} 
+                <Itinerary
+                    formData={formData}
                     locations={locations}
                 />}
             />

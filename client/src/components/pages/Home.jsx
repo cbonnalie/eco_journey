@@ -1,22 +1,13 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import $ from "jquery";
 import Header from "../assets/Header";
-
-/**
- * Activities to choose from.
- * TODO: replace with fetch from backend
- */
-const activities = [
-    "Entertainment", "Outdoor", "Cultural", "Educational", "Leisure", "Historic"
-]
-
+import {fetchActivityTypes} from "../utils/fetchers"
 /**
  * Price limits.
  */
 const prices = [
     "", "100", "200", "300", "400", "500", "600", "700", "800", "900", "1000+"
 ]
-
 /**
  * Renders the form that users fill out to get their itinerary.
  *
@@ -27,11 +18,11 @@ const prices = [
  * @returns {Element} - the form
  */
 const Home = ({formData, setFormData, locations}) => {
+
+    // The different activity types to choose from.
+    const [activityTypes, setActivityTypes] = useState([]);
     
-    /**
-     * Runs when the component mounts. It resets the form data
-     * both in the state and in local storage.
-     */
+    // resets the form data both in the state and in local storage.
     useEffect(() => {
         console.log("resetting form data...")
         const resetFormData = {
@@ -44,24 +35,17 @@ const Home = ({formData, setFormData, locations}) => {
                 longitude: ""
             }
         }
-        // reset form data in state
         setFormData(resetFormData)
-        // save the reset form to local storage
         localStorage.setItem("formData", JSON.stringify(resetFormData))
         console.log("form data reset")
     }, [setFormData])
-        
-    
-    // useEffect(() => {
-    //     console.log("resetting location data...")
-    //     // reset locations in state
-    //     setLocations([])
-    //     // save the reset locations to local storage
-    //     localStorage.setItem("locations", JSON.stringify([]))
-    //     console.log("location data reset")
-    // }, [setLocations]);
 
-    /**
+    // fetch activity types from backend
+    useEffect(() => {
+        void fetchActivityTypes(setActivityTypes)
+    }, []);
+    
+    /*
      * Handles the functionality of the next, previous, and submit buttons
      * in terms of showing the correct form data and hiding the correct buttons.
      */
@@ -149,16 +133,16 @@ const Home = ({formData, setFormData, locations}) => {
     const renderActivitiesForm = () => (
         <div className={"option"}>
             <h1>Select your preferred activities</h1>
-            {activities.map((activity, index) => (
+            {activityTypes.map((activity, index) => (
                 <div key={index} className={"activity-option"}>
                     <input
                         type="checkbox"
-                        id={activity}
-                        name={activity}
-                        value={activity}
+                        id={activity.type}
+                        name={activity.type}
+                        value={activity.type}
                         onChange={handleInputChange}
                     />
-                    <label htmlFor={activity}>{activity}</label>
+                    <label htmlFor={activity.type}>{activity.type}</label>
                 </div>
             ))}
         </div>

@@ -3,7 +3,9 @@ import cors from 'cors'
 import {
     getUsers,
     getActivitiesByTypes,
-    getLocations, getAirplaneCosts
+    getLocations, 
+    getAirplaneCosts,
+    getAllActivityTypes
 } from './database.js'
 
 const app = express()
@@ -49,6 +51,11 @@ app.get("/api/locations", async (req, res) => {
 app.get("/api/plane-costs", async (req, res) => {
     const costs = await getAirplaneCosts()
     res.json(costs)
+})
+
+app.get("/api/activity-types", async (require,  res) => {
+    const types = await getAllActivityTypes()
+    res.json(types)
 })
 
 app.listen(5000, () => {

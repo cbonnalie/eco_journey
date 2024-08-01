@@ -39,7 +39,7 @@ export async function getActivitiesByTypes(types) {
 
 /**
  * Get all locations ordered by state, then city
- * @returns {Promise<*>} - the locations
+ * @returns {Promise<*>} - city, state, and coordinates of each location
  */
 export async function getLocations() {
     const [rows] = await pool.query(`
@@ -50,11 +50,20 @@ export async function getLocations() {
     return rows
 }
 
+// TODO delete: was just for testing purposes
 export async function getAirplaneCosts() {
     const [rows] = await pool.query(`
         SELECT cost_per_mi, emissions_per_mi
         FROM transportation_types
         WHERE name = 'Airplane'
         `)
+    return rows
+}
+
+export async function getAllActivityTypes() {
+    const [rows] = await pool.query(`
+    SELECT DISTINCT type
+    FROM activities
+    `)
     return rows
 }

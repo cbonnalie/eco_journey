@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import calculateDistance from "../utils/calculateDistance"
 import "../styles/itin.css"
-import {fetchActivities, fetchAirplaneCosts} from "../utils/fetchers";
+import {fetchActivitiesByType, fetchAirplaneCosts} from "../utils/fetchers";
 import Header from "../assets/Header";
 
 /**
@@ -12,7 +12,7 @@ import Header from "../assets/Header";
  */
 const Itinerary = ({formData, locations}) => {
 
-    const [activities, setActivities] = useState([])
+    const [chosenActivityTypes, setChosenActivityTypes] = useState([])
     const [airplaneCosts, setAirplaneCosts] = useState([])
     /**
      * Fetch activities based on the form data.
@@ -21,7 +21,7 @@ const Itinerary = ({formData, locations}) => {
     useEffect(() => {
         if (formData.activities.length > 0) {
             // void suppresses the promise ignored flag
-            void fetchActivities(formData, setActivities);
+            void fetchActivitiesByType(formData, setChosenActivityTypes);
         }
     }, [formData]);
 
@@ -38,7 +38,7 @@ const Itinerary = ({formData, locations}) => {
             <div>
                 <h1>Finding Your Next Adventure</h1>
                 <h2>Activities</h2>
-                <p>{activities.map(a => a.name).join(", ")}</p>
+                <p>{chosenActivityTypes.map(a => a.name).join(", ")}</p>
                 <h2>Budget</h2>
                 <p>${formData.budget}</p>
                 <h2>Location</h2>

@@ -13,7 +13,7 @@ export const fetchLocations = async (setLocations) => {
     }
 }
 
-export const fetchActivities = async (formData, setActivities) => {
+export const fetchActivitiesByType = async (formData, setActivities) => {
     try {
         const queryParams = new URLSearchParams(
             {types: formData.activities.join(',')}).toString()
@@ -41,4 +41,11 @@ export const fetchAirplaneCosts = async (setAirplaneCosts) => {
     console.log("airplane costs fetched from the backend")
     console.log(data)
     console.log(parsedData)
+}
+
+export const fetchActivityTypes = async (setActivityTypes) => {
+    const response = await fetch("/api/activity-types")
+    const data = await response.json()
+    setActivityTypes(data)
+    console.log("activities fetched from the backend")
 }
