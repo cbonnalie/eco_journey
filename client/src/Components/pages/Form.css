@@ -9,7 +9,13 @@
     border-radius: 10px;
     padding: 30px 40px;
 }
-
+.email-link {
+    color: white;
+    //text-decoration: none;
+}
+.email-link:hover {
+    color: lightgray;
+}
 .wrapper h1 {
     font-size: 36px;
     text-align: center;
