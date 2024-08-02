@@ -4,6 +4,17 @@ const Itinerary = ({formData}) => {
 
     const [activities, setActivities] = useState([])
 
+    const saveTrip = () => {
+        const existingTrips = JSON.parse(localStorage.getItem("savedTrips")) || [];
+        const newTrip = {
+            activities: formData.activities,
+            budget: formData.budget,
+            location: formData.location
+        };
+        localStorage.setItem("savedTrips", JSON.stringify([...existingTrips, newTrip]));
+    };
+    <button onClick={saveTrip}>Save Trip</button>
+
     useEffect(() => {
         // Fetch activities based on the selected types
         const fetchActivities = async () => {

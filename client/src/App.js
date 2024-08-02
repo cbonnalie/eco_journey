@@ -6,6 +6,9 @@ import ForgotPassword from "./Components/pages/ForgotPassword";
 import Home from "./Components/pages/Home";
 import Itinerary from "./Components/pages/Itinerary";
 import About from "./Components/pages/About";
+import SavedTrips from "./Components/pages/SavedTrips";
+import Header from "./Components/Assets/Header"; // Adjust the path as needed
+
 
 /**
  * The main component for the application. It is responsible for rendering
@@ -69,19 +72,20 @@ const App = () => {
      */
     return (
             <Routes>
-                        <Route path="/" element={<About />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/forgot-password" element={<ForgotPassword />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route path="/home" element={
-                            <Home
-                                formData={formData}
-                                handleInputChange={handleInputChange}
-                                setFormData={setFormData}
-                            />
-                        } />
-                        <Route path="/itinerary" element={<Itinerary formData={formData} />} />
-                    </Routes>
+                <Route path="/" element={<About />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/home" element={
+                    <Home
+                        formData={formData}
+                        handleInputChange={handleInputChange}
+                        setFormData={setFormData}
+                    />
+                } />
+                <Route path="/itinerary" element={<Itinerary formData={formData} />} />
+                <Route path="/saved-trips" element={<SavedTrips />} />
+            </Routes>
         );
 };
 

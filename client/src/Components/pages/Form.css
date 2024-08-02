@@ -133,3 +133,18 @@ select {
     margin: 10px 0;
     text-align: center;
 }
+
+nav {
+    display: flex;
+    justify-content: center; /* Center the links horizontally */
+}
+
+.nav-link {
+    margin: 0 15px; /* Adjust the value as needed */
+    text-decoration: none; /* Remove underline */
+    color: #FFFFF;
+}
+
+.nav-link:hover {
+    text-decoration: underline; /* Optional: Underline on hover */
+}
