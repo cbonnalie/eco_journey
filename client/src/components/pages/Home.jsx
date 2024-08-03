@@ -69,16 +69,11 @@ const Home = ({formData, setFormData, locations}) => {
             }
         }
 
-        // handle next and previous button clicks
-        $("#next, #prev").on("click", function () {
-            const currentOption = options.filter(":visible")
-            const currentIndex = options.index(currentOption)
-            const direction = this.id === "next" ? 1 : -1
-            options.eq(currentIndex).hide()
-            options.eq(currentIndex + direction).show()
-            updateButtonStates(currentIndex + direction)
-        })
-    }, [])
+        // Update buttons based on state of the form
+        const updateButtonStates = () => {
+            $("#prev").prop("disabled", currentIndex === 0);
+            renderButtons();
+        };
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
@@ -112,21 +107,18 @@ const Home = ({formData, setFormData, locations}) => {
      * @param e - the event object
      */
     const handleSubmit = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         if (isFormValid()) {
             window.location.href = "/itinerary";
         } else {
             alert("Please fill out all fields")
             console.log("form submitted: ", formData)
         }
-    }
+    };
 
-    /**
-     * Check if the budget and location fields have a value.
-     */
     const isFormValid = () => {
-        return formData.budget && formData.location
-    }
+        return formData.budget && formData.location;
+    };
 
     /* Render Functions */
 
@@ -146,22 +138,20 @@ const Home = ({formData, setFormData, locations}) => {
                 </div>
             ))}
         </div>
-    )
+    );
 
     const renderBudgetForm = () => (
         <div className={"option"}>
             <h1>What is your budget?</h1>
             <select name="budget" onChange={handleInputChange}>
                 {prices.map((price, index) => (
-                    <option
-                        key={index}
-                        value={price}>
+                    <option key={index} value={price}>
                         {"$" + price}
                     </option>
                 ))}
             </select>
         </div>
-    )
+    );
 
     const renderLocationForm = () => (
         <div className={"option"}>
@@ -177,29 +167,34 @@ const Home = ({formData, setFormData, locations}) => {
                 ))}
             </select>
         </div>
-    )
+    );
 
     const renderButtons = () => (
         <div>
-            <input id="prev" className="move" type="button" value="Prev"/>
-            <input id="next" className="move" type="button" value="Next"/>
-            <button type={"submit"} id={"submit"}>Submit</button>
+            {currentIndex > 0 && (
+                <input id="prev" className="move" type="button" value="Prev" onClick={handlePrev} />
+            )}
+            <input id="next" className="move" type="button" value="Next" onClick={handleNext} />
+            {currentIndex === 2 && ( // Change 2 to the index of the last option if needed
+                <button type={"submit"} id={"submit"}>Submit</button>
+            )}
         </div>
-    )
+    );
 
     return (
         <div>
-            <Header/>
+            <Header />
             <div className={"wrapper"}>
                 <form onSubmit={handleSubmit}>
-                    {renderActivitiesForm()}
-                    {renderBudgetForm()}
-                    {renderLocationForm()}
-                    {renderButtons()}
+                    {currentIndex === 0 && renderActivitiesForm()}
+                    {currentIndex === 1 && renderBudgetForm()}
+                    {currentIndex === 2 && renderLocationForm()}
+                    {renderButtons()} {/* No need to pass the index anymore */}
                 </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Home
+export default Home;
+
