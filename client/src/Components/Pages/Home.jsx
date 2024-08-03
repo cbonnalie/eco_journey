@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 import $ from "jquery";
-import Header from "../assets/Header";
-import {fetchActivityTypes} from "../utils/fetchers"
+import Header from "../Assets/Header";
+import {fetchActivityTypes} from "../Utils/fetchers"
+
 /**
  * Price limits.
  */
@@ -19,9 +20,10 @@ const prices = [
  */
 const Home = ({formData, setFormData, locations}) => {
 
+    const [currentIndex, setCurrentIndex] = useState(0); // State for current index
     // The different activity types to choose from.
     const [activityTypes, setActivityTypes] = useState([]);
-    
+
     // resets the form data both in the state and in local storage.
     useEffect(() => {
         console.log("resetting form data...")
@@ -44,36 +46,24 @@ const Home = ({formData, setFormData, locations}) => {
     useEffect(() => {
         void fetchActivityTypes(setActivityTypes)
     }, []);
-    
+
     /*
      * Handles the functionality of the next, previous, and submit buttons
      * in terms of showing the correct form data and hiding the correct buttons.
      */
     useEffect(() => {
-        // show first option by default
-        const options = $(".option")
-        options.hide().eq(0).show()
-        $("#prev").prop("disabled", true)
-        $("#submit").hide()
-
-        // update buttons based on state of the form
-        const updateButtonStates = (currentIndex) => {
-            $("#prev").prop("disabled", currentIndex === 0)
-            // replace next with submit on last option
-            if (currentIndex === options.length - 1) {
-                $("#submit").show()
-                $("#next").hide()
-            } else {
-                $("#submit").hide()
-                $("#next").show()
-            }
-        }
+        const options = $(".option");
+        options.hide().eq(0).show();
 
         // Update buttons based on state of the form
         const updateButtonStates = () => {
             $("#prev").prop("disabled", currentIndex === 0);
             renderButtons();
         };
+
+        // Show buttons initially
+        updateButtonStates();
+    }, [currentIndex]); // Re-run this effect when currentIndex changes
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
@@ -100,6 +90,13 @@ const Home = ({formData, setFormData, locations}) => {
         })
     }
 
+    const handleNext = () => {
+        setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, 2)); // Change 2 to the index of the last option
+    };
+
+    const handlePrev = () => {
+        setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+    };
 
     /**
      * If the form is valid, redirect to the itinerary page.
@@ -172,9 +169,9 @@ const Home = ({formData, setFormData, locations}) => {
     const renderButtons = () => (
         <div>
             {currentIndex > 0 && (
-                <input id="prev" className="move" type="button" value="Prev" onClick={handlePrev} />
+                <input id="prev" className="move" type="button" value="Prev" onClick={handlePrev}/>
             )}
-            <input id="next" className="move" type="button" value="Next" onClick={handleNext} />
+            <input id="next" className="move" type="button" value="Next" onClick={handleNext}/>
             {currentIndex === 2 && ( // Change 2 to the index of the last option if needed
                 <button type={"submit"} id={"submit"}>Submit</button>
             )}
@@ -183,7 +180,7 @@ const Home = ({formData, setFormData, locations}) => {
 
     return (
         <div>
-            <Header />
+            <Header/>
             <div className={"wrapper"}>
                 <form onSubmit={handleSubmit}>
                     {currentIndex === 0 && renderActivitiesForm()}
@@ -195,6 +192,7 @@ const Home = ({formData, setFormData, locations}) => {
         </div>
     );
 };
+
 
 export default Home;
 

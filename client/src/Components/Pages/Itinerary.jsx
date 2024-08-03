@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react"
-import calculateDistance from "../utils/calculateDistance"
-import "../styles/itin.css"
-import {fetchActivitiesByType, fetchAirplaneCosts} from "../utils/fetchers";
-import Header from "../assets/Header";
+import calculateDistance from "../Utils/calculateDistance"
+import "../Styles/itin.css"
+import {fetchActivitiesByType, fetchAirplaneCosts} from "../Utils/fetchers";
+import Header from "../Assets/Header";
 
 /**
  * Displays the itineraries based on the form data.

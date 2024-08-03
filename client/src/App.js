@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom"; // Import Navigate
-import Login from "./Components/pages/Login";
-import Register from "./Components/pages/Register";
-import ForgotPassword from "./Components/pages/ForgotPassword";
-import Home from "./Components/pages/Home";
-import Itinerary from "./Components/pages/Itinerary";
-import About from "./Components/pages/About";
-import SavedTrips from "./Components/pages/SavedTrips";
-import Header from "./Components/Assets/Header"; // Adjust the path as needed
+import Login from "./Components/Pages/Login";
+import Register from "./Components/Pages/Register";
+import ForgotPassword from "./Components/Pages/ForgotPassword";
+import Home from "./Components/Pages/Home";
+import Itinerary from "./Components/Pages/Itinerary";
+import About from "./Components/Pages/About";
+import SavedTrips from "./Components/Pages/SavedTrips";
+import Header from "./Components/Assets/Header";
+import {fetchLocations} from "./Components/Utils/fetchers"; // Adjust the path as needed
 
 
 /**
@@ -67,35 +68,19 @@ const App = () => {
                 <Route path="/home" element={
                     <Home
                         formData={formData}
-                        handleInputChange={handleInputChange}
                         setFormData={setFormData}
-                    />
-                } />
-                <Route path="/itinerary" element={<Itinerary formData={formData} />} />
+                        locations={locations}
+                    />}
+                />
+                <Route path="/itinerary" element={
+                    <Itinerary
+                        formData={formData}
+                        locations={locations}
+                    />}
+                />
                 <Route path="/saved-trips" element={<SavedTrips />} />
             </Routes>
         );
 };
 
 export default App;
-
-
-            <Route path="/home" element={
-                <Home
-                    formData={formData}
-                    setFormData={setFormData}
-                    locations={locations}
-                />}
-            />
-
-            <Route path="/itinerary" element={
-                <Itinerary
-                    formData={formData}
-                    locations={locations}
-                />}
-            />
-        </Routes>
-    )
-}
-
-export default App

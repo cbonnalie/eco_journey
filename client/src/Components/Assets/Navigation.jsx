@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Form from "../pages/Form.css";
+import "../Styles/Form.css";
 
 const Navigation = () => {
     return (
