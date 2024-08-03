@@ -1,0 +1,28 @@
+h1, h2, h3, p {
+    color: white;
+    text-align: center;
+}
+
+.itinerary-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.itinerary-container {
+    flex: 1 1 calc(50% - 20px);
+    box-sizing: border-box;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid rgba(255, 255, 255, .2);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+    border-radius: 10px;
+    padding: 10px 0;
+    backdrop-filter: blur(30px);
+}
+
+
+

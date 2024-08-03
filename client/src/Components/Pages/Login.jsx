@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {FaLock, FaUser} from "react-icons/fa";
-import "./Form.css";
+import "../Styles/Form.css";
 
 const Login = () => {
     const [formData, setFormData] = useState({

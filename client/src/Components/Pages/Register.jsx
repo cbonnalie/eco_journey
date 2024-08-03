@@ -1,5 +1,5 @@
 import React from "react";
-import "./Form.css";
+import "../Styles/Form.css";
 import { FaUser, FaLock } from "react-icons/fa";
 
 const Register = () => {
