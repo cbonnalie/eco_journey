@@ -2,8 +2,8 @@ export const fetchLocations = async (setLocations) => {
     try {
         const response = await fetch("/api/locations")
         const data = await response.json()
-        const array = data.map(({city, state, latitude, longitude}) => ({
-            city, state, latitude, longitude
+        const array = data.map(({city, state, latitude, longitude, geographical_feature}) => ({
+            city, state, latitude, longitude, geographical_feature
         }))
         setLocations(array)
         localStorage.setItem("locations", JSON.stringify(array))
@@ -48,4 +48,11 @@ export const fetchActivityTypes = async (setActivityTypes) => {
     const data = await response.json()
     setActivityTypes(data)
     console.log("activities fetched from the backend")
+}
+
+export const fetchGeographyTypes = async (setGeoTypes) => {
+    const response = await fetch("/api/geography-types")
+    const data = await response.json()
+    setGeoTypes(data)
+    console.log("geography types fetched from the backend")
 }

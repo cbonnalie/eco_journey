@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {FaLock, FaUser} from "react-icons/fa";
 import "../Styles/Form.css";
+import {Navigate} from "react-router-dom";
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -19,7 +20,7 @@ const Login = () => {
     const handleLogin = (e) => {
         e.preventDefault()
         if (isFormValid()) {
-            window.location.href = "/home";
+            window.location.href = "/question-form";
         } else {
             alert("Please fill out all fields")
         }

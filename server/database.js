@@ -43,7 +43,7 @@ export async function getActivitiesByTypes(types) {
  */
 export async function getLocations() {
     const [rows] = await pool.query(`
-        SELECT city, state, latitude, longitude
+        SELECT city, state, latitude, longitude, geographical_feature
         FROM locations
         ORDER BY state, city
         `)
@@ -64,6 +64,14 @@ export async function getAllActivityTypes() {
     const [rows] = await pool.query(`
     SELECT DISTINCT type
     FROM activities
+    `)
+    return rows
+}
+
+export async function getGeographyTypes() {
+    const [rows] = await pool.query(`
+    SELECT DISTINCT geographical_feature
+    FROM locations
     `)
     return rows
 }

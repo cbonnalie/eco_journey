@@ -5,7 +5,8 @@ import {
     getActivitiesByTypes,
     getLocations, 
     getAirplaneCosts,
-    getAllActivityTypes
+    getAllActivityTypes,
+    getGeographyTypes
 } from './database.js'
 
 const app = express()
@@ -55,6 +56,11 @@ app.get("/api/plane-costs", async (req, res) => {
 
 app.get("/api/activity-types", async (require,  res) => {
     const types = await getAllActivityTypes()
+    res.json(types)
+})
+
+app.get("/api/geography-types", async (req, res) => {
+    const types = await getGeographyTypes()
     res.json(types)
 })
 

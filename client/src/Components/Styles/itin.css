@@ -3,6 +3,10 @@ h1, h2, h3, p {
     text-align: center;
 }
 
+body {
+    margin-top: 5rem;
+}
+
 .itinerary-wrapper {
     display: flex;
     flex-wrap: wrap;

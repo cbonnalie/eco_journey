@@ -12,7 +12,15 @@ import Header from "../Assets/Header";
  */
 const Itinerary = ({formData, locations}) => {
 
+    // generate 5 trips
+    const trips = [{}]
+    
+    const validLocations = locations.filter((location) => {
+        return formData.geography.includes(location.geographical_feature)
+    })
+
     const [chosenActivityTypes, setChosenActivityTypes] = useState([])
+
     const [airplaneCosts, setAirplaneCosts] = useState([])
     /**
      * Fetch activities based on the form data.
@@ -37,28 +45,24 @@ const Itinerary = ({formData, locations}) => {
 
             <div>
                 <h1>Finding Your Next Adventure</h1>
-                <h2>Activities</h2>
+                <h2>Your Activities</h2>
                 <p>{chosenActivityTypes.map(a => a.name).join(", ")}</p>
-                <h2>Budget</h2>
+                <h2>Your Budget</h2>
                 <p>${formData.budget}</p>
-                <h2>Location</h2>
-                <p><b>City: </b>{formData.location.city}</p>
-                <p><b>State: </b>{formData.location.state}</p>
+                <h2>Your Location</h2>
+                <p><b></b>{formData.location.city}, {formData.location.state}</p>
                 <p><b>Latitude: </b>{formData.location.latitude}</p>
                 <p><b>Longitude: </b>{formData.location.longitude}</p>
             </div>
 
             <div className={"itinerary-wrapper"}>
-                {locations.map((location, index) => {
+                {validLocations.map((location, index) => {
                     const distance = calculateDistance(
                         location.latitude, location.longitude,
                         formData.location.latitude, formData.location.longitude
                     )
 
-                    console.log(airplaneCosts)
-                    console.log(distance)
                     const airplaneCost = airplaneCosts["cost_per_mi"] * distance
-
                     const CO2Cost = airplaneCosts["co2_per_mi"] * distance
 
 
