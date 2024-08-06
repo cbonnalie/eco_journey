@@ -9,7 +9,7 @@
  * @param lonEnd - longitude of the ending point
  * @returns {number} - distance between the two points in miles
  */
-function calculateDistance(latStart, lonStart, latEnd, lonEnd) {
+export function calculateDistance(latStart, lonStart, latEnd, lonEnd) {
     
     // convert degrees to radians
     const toRadians = (degrees) => degrees * (Math.PI / 180)
@@ -38,5 +38,3 @@ function calculateDistance(latStart, lonStart, latEnd, lonEnd) {
     const earthRadius = 3958.8
     return earthRadius * centralAngle
 }
-
-export default calculateDistance;

@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom"; // Import Navigate
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./Components/Pages/Login";
 import Register from "./Components/Pages/Register";
 import ForgotPassword from "./Components/Pages/ForgotPassword";
-import Home from "./Components/Pages/Home";
+import QuestionForm from "./Components/Pages/QuestionForm";
 import Itinerary from "./Components/Pages/Itinerary";
 import About from "./Components/Pages/About";
 import SavedTrips from "./Components/Pages/SavedTrips";
-import Header from "./Components/Assets/Header";
-import {fetchLocations} from "./Components/Utils/fetchers"; // Adjust the path as needed
+import {fetchLocations} from "./Components/Utils/fetchers";
 
 
 /**
@@ -28,7 +27,9 @@ const App = () => {
             state: "",
             latitude: "",
             longitude: ""
-        }
+        },
+        geography: [],
+        tripDays: ""
     })
 
     const [locations, setLocations] = useState([])
@@ -65,8 +66,8 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/home" element={
-                    <Home
+                <Route path="/question-form" element={
+                    <QuestionForm
                         formData={formData}
                         setFormData={setFormData}
                         locations={locations}

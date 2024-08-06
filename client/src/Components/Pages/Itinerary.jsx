@@ -1,80 +1,139 @@
-import React, {useEffect, useState} from "react"
-import calculateDistance from "../Utils/calculateDistance"
-import "../Styles/itin.css"
-import {fetchActivitiesByType, fetchAirplaneCosts} from "../Utils/fetchers";
+import React, {useEffect, useState} from "react";
+import "../Styles/itin.css";
+import {
+    fetchActivitiesByType,
+} from "../Utils/fetchers";
 import Header from "../Assets/Header";
+import {calculateDistance, calculateTripCost} from "../Utils/calculateDistance";
+import {getStateFullName} from "../Utils/getStateFullName";
 
-/**
- * Displays the itineraries based on the form data.
- * @param formData - the form data
- * @param locations
- * @returns {Element} - the itineraries
- */
+// const trips = [{
+//     initial_travel_cost: "",
+//     cities: [],
+//     activities: [],
+//     travel_cost_between_cities: [],
+//     total_cost: ""
+// }]
+
+
 const Itinerary = ({formData, locations}) => {
 
-    const [chosenActivityTypes, setChosenActivityTypes] = useState([])
-    const [airplaneCosts, setAirplaneCosts] = useState([])
-    /**
-     * Fetch activities based on the form data.
-     * Will be replaced with something more comprehensive.
-     */
+    const [validActivities, setValidActivities] = useState([]);
+
+    const validLocations = locations.filter((location) => {
+        const hasChosenActivity = validActivities.some(activity => activity.location_id === location.location_id);
+        return formData.geography.includes(location.geographical_feature) && hasChosenActivity;
+    });
+
+    const uniqueStates = [...new Set(validLocations.map(location => location.state))];
+
     useEffect(() => {
         if (formData.activities.length > 0) {
-            // void suppresses the promise ignored flag
-            void fetchActivitiesByType(formData, setChosenActivityTypes);
+            void fetchActivitiesByType(formData, setValidActivities);
         }
     }, [formData]);
 
-    useEffect(() => {
-        void fetchAirplaneCosts(setAirplaneCosts)
-    }, []);
+    const getActivityCountByState = (state) => {
+        return validActivities.filter(activity =>
+            validLocations.some(
+                location =>
+                    location.location_id === activity.location_id
+                    && location.state === state)).length;
+    };
+
+    const getDistanceToState = (state) => {
+        const stateLocations = validLocations.filter(location => location.state === state);
+        if (stateLocations.length === 0) return Infinity;
+        const distances = stateLocations.map(location => calculateDistance(
+            formData.location.latitude,
+            formData.location.longitude,
+            location.latitude,
+            location.longitude
+        ));
+        return Math.min(...distances);
+    };
+
+    const topFiveStates = uniqueStates
+        .map(state => ({
+            state,
+            activityCount: getActivityCountByState(state),
+            distance: getDistanceToState(state)
+        }))
+        .sort((a, b) => b.activityCount - a.activityCount || a.distance - b.distance)
+        .slice(0, 5);
+
+    const ItineraryHeader = ({formData}) => (
+        <div className={"itinerary-header"}>
+            <h1>Finding Your Next Adventure</h1>
+            <br/>
+            <h2>Your Location</h2>
+            <p><b></b>{formData.location.city}, {formData.location.state}</p>
+        </div>
+    );
+
+    const TripHeader = ({index, state}) => (
+        <div className="trip-header">
+            <h1><b>{index + 1}: {getStateFullName(state)}</b></h1>
+        </div>
+    );
+
+    const ItineraryContainer = ({state, activityCount, validLocations, chosenActivities}) => {
+        
+        const distance = getDistanceToState(state);
+        
+        return (
+            <div className="itinerary-container">
+                <p>
+                    <b>Number of Activities: </b>{activityCount}
+                    <br/>
+                    <b>Distance: </b>{distance.toFixed(2)} miles
+                    <br/>
+                    <b>Transportation: </b>{}
+                    <br/>
+                    <b>Total Cost: </b>
+                </p>
+                {validLocations.filter(location => location.state === state).map((location, index) => (
+                    <ActivityList key={index} location={location} chosenActivities={chosenActivities}/>
+                ))}
+            </div>)
+    }
+
+    const ActivityList = ({location, chosenActivities}) => (
+        <div>
+            <h3><b>{location.city}</b></h3>
+            <ul>
+                {chosenActivities.filter(a => a.location_id === location.location_id)
+                    .map(a => <li key={a.activity_id}>{a.name} (ID: {a.activity_id})</li>)}
+            </ul>
+            <br/>
+        </div>
+    );
 
     return (
-
         <div>
-
             <Header/>
-
-            <div>
-                <h1>Finding Your Next Adventure</h1>
-                <h2>Activities</h2>
-                <p>{chosenActivityTypes.map(a => a.name).join(", ")}</p>
-                <h2>Budget</h2>
-                <p>${formData.budget}</p>
-                <h2>Location</h2>
-                <p><b>City: </b>{formData.location.city}</p>
-                <p><b>State: </b>{formData.location.state}</p>
-                <p><b>Latitude: </b>{formData.location.latitude}</p>
-                <p><b>Longitude: </b>{formData.location.longitude}</p>
-            </div>
+            <ItineraryHeader formData={formData}/>
 
             <div className={"itinerary-wrapper"}>
-                {locations.map((location, index) => {
-                    const distance = calculateDistance(
-                        location.latitude, location.longitude,
-                        formData.location.latitude, formData.location.longitude
-                    )
 
-                    console.log(airplaneCosts)
-                    console.log(distance)
-                    const airplaneCost = airplaneCosts["cost_per_mi"] * distance
-
-                    const CO2Cost = airplaneCosts["co2_per_mi"] * distance
-
-
+                {topFiveStates.map((stateObj, index) => {
+                    const {state, activityCount} = stateObj;
                     return (
-                        <div key={index} className={"itinerary-container"}>
-                            <h3><b>{location.city}, {location.state}</b></h3>
-                            <p><b>Distance: </b>{distance.toFixed(2)} miles</p>
-                            <p><b>Flight cost: </b>${airplaneCost.toFixed(2)}</p>
-                            <p><b>CO2 Emissions: </b>{CO2Cost.toFixed(2)}kg per mi</p>
+                        <div key={index}>
+                            <TripHeader index={index} state={state}/>
+                            <ItineraryContainer
+                                state={state}
+                                activityCount={activityCount}
+                                validLocations={validLocations}
+                                chosenActivities={validActivities}
+                            />
                         </div>
                     )
                 })}
+
             </div>
         </div>
-    )
+    );
 }
 
-
-export default Itinerary
+export default Itinerary;
