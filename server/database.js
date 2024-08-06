@@ -27,7 +27,7 @@ export async function getActivitiesByTypes(types) {
  * @param {Object} userData - The user data object
  */
 export async function addUser(userData) {
-    const { firstName, lastName, username, password, email } = userData;
+    const {username, password, email } = userData;
 
     // Check for existing user
     const [existingUsers] = await pool.query('SELECT * FROM users WHERE username = ? OR email = ?', [username, email]);
@@ -37,8 +37,8 @@ export async function addUser(userData) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const [result] = await pool.query(
-        'INSERT INTO users (first_name, last_name, username, password, email) VALUES (?, ?, ?, ?, ?)',
-        [firstName, lastName, username, hashedPassword, email]
+        'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
+        [username, hashedPassword, email]
     );
 
     return result;

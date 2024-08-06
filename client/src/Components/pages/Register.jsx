@@ -3,8 +3,6 @@ import "./Form.css";
 import { FaUser, FaLock } from "react-icons/fa";
 
 const Register = () => {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,8 +18,6 @@ const Register = () => {
         }
 
         const userData = {
-            firstName,
-            lastName,
             username,
             password,
             email
@@ -55,26 +51,6 @@ const Register = () => {
             <form onSubmit={handleSubmit}>
                 <h1>Register</h1>
                 {error && <div className="error">{error}</div>}
-                <div className={"input-box"}>
-                    <input
-                        type={"text"}
-                        placeholder={"First Name"}
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        required
-                    />
-                    <FaUser className={"icon"} />
-                </div>
-                <div className={"input-box"}>
-                    <input
-                        type={"text"}
-                        placeholder={"Last Name"}
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        required
-                    />
-                    <FaUser className={"icon"} />
-                </div>
                 <div className={"input-box"}>
                     <input
                         type={"text"}
