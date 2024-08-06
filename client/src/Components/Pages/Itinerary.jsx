@@ -2,21 +2,15 @@ import React, {useEffect, useState} from "react";
 import "../Styles/itin.css";
 import {
     fetchActivitiesByType,
+    fetchTransportationByName
 } from "../Utils/fetchers";
 import Header from "../Assets/Header";
-import {calculateDistance, calculateTripCost} from "../Utils/calculateDistance";
+import {calculateDistance} from "../Utils/calculateDistance";
 import {getStateFullName} from "../Utils/getStateFullName";
 
-// const trips = [{
-//     initial_travel_cost: "",
-//     cities: [],
-//     activities: [],
-//     travel_cost_between_cities: [],
-//     total_cost: ""
-// }]
-
-
 const Itinerary = ({formData, locations}) => {
+
+    const [trips, setTrips] = useState([]);
 
     const [validActivities, setValidActivities] = useState([]);
 
@@ -50,6 +44,7 @@ const Itinerary = ({formData, locations}) => {
             location.latitude,
             location.longitude
         ));
+        console.log("distances calculated")
         return Math.min(...distances);
     };
 
@@ -62,6 +57,70 @@ const Itinerary = ({formData, locations}) => {
         .sort((a, b) => b.activityCount - a.activityCount || a.distance - b.distance)
         .slice(0, 5);
 
+    useEffect(() => {
+        const fetchData = async () => {
+
+            const newTrips = await Promise.all(topFiveStates.map(async (stateObj) => {
+
+                const { state, distance } = stateObj;
+
+                const locations = validLocations.filter(location => location.state === state);
+
+                const activities = validActivities
+                    .filter(activity => locations.some(location => location.location_id === activity.location_id));
+
+                const activityCost = activities.reduce((acc, activity) => acc + parseFloat(activity.cost), 0);
+                const activityCO2 = activities.reduce((acc, activity) => acc + parseFloat(activity.co2_emissions), 0);
+                
+                const transportation = await (distance > 300 ? fetchTransportationByName("Airplane") : fetchTransportationByName("Car Rental"))
+                
+                const transportationCost = distance * transportation.cost_per_mi * 2;
+                const transportationCO2 = distance * transportation.emissions_per_mi * 2;
+                
+                const totalCost = transportationCost + activityCost;
+                const totalCO2 = transportationCO2 + activityCO2;
+                
+                console.log("state: ", state)
+                console.log("activity cost: ", activityCost)
+                console.log("activity CO2: ", activityCO2)
+                console.log("transportation: ", transportation.name)
+                console.log("distance: ", distance)
+                console.log("cost per mile: ", transportation.cost_per_mi)
+                console.log("transportation cost: ", transportationCost)
+                console.log("total cost: ", totalCost)
+                console.log("total CO2: ", totalCO2)
+
+                return {
+                    user_id: 1,
+                    state: state,
+                    locations: locations,
+                    activities: activities,
+                    transportation: transportation,
+                    total_cost: totalCost,
+                    total_CO2: totalCO2,
+                    distance: distance
+                }}))
+                
+            setTrips(prevTrips => {
+                if (JSON.stringify(prevTrips) !== JSON.stringify(newTrips)) {
+                    console.log("trips set")
+                    return newTrips;
+                }
+                return prevTrips;
+            });
+            
+            void addToTripsTable()
+        };
+
+        void fetchData();
+    }, [topFiveStates, validActivities, validLocations]);
+    
+    const addToTripsTable = async () => {
+        
+    }
+    
+    
+    
     const ItineraryHeader = ({formData}) => (
         <div className={"itinerary-header"}>
             <h1>Finding Your Next Adventure</h1>
@@ -77,24 +136,27 @@ const Itinerary = ({formData, locations}) => {
         </div>
     );
 
-    const ItineraryContainer = ({state, activityCount, validLocations, chosenActivities}) => {
-        
-        const distance = getDistanceToState(state);
+    const ItineraryContainer = ({trip}) => {
+
+        const { activities, locations, transportation, total_cost, total_CO2, distance } = trip;
         
         return (
             <div className="itinerary-container">
                 <p>
-                    <b>Number of Activities: </b>{activityCount}
+                    <b>Number of Activities: </b>{activities.length}
                     <br/>
                     <b>Distance: </b>{distance.toFixed(2)} miles
                     <br/>
-                    <b>Transportation: </b>{}
+                    <b>Transportation: </b>{transportation.name}
                     <br/>
-                    <b>Total Cost: </b>
+                    <b>Total Cost: </b>${total_cost.toFixed(2)}
+                    <br/>
+                    <b>Total CO2 Emissions: </b>{total_CO2.toFixed(2)} kg
                 </p>
-                {validLocations.filter(location => location.state === state).map((location, index) => (
-                    <ActivityList key={index} location={location} chosenActivities={chosenActivities}/>
+                {locations.map((location, index) => (
+                    <ActivityList key={index} location={location} chosenActivities={activities}/>
                 ))}
+                <button>Save Trip</button>
             </div>)
     }
 
@@ -116,20 +178,12 @@ const Itinerary = ({formData, locations}) => {
 
             <div className={"itinerary-wrapper"}>
 
-                {topFiveStates.map((stateObj, index) => {
-                    const {state, activityCount} = stateObj;
-                    return (
-                        <div key={index}>
-                            <TripHeader index={index} state={state}/>
-                            <ItineraryContainer
-                                state={state}
-                                activityCount={activityCount}
-                                validLocations={validLocations}
-                                chosenActivities={validActivities}
-                            />
-                        </div>
-                    )
-                })}
+                {trips.map((trip, index) => (
+                    <div key={index}>
+                        <TripHeader index={index} state={trip.state}/>
+                        <ItineraryContainer trip={trip}/>
+                    </div>
+                ))}
 
             </div>
         </div>

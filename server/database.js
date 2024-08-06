@@ -47,16 +47,6 @@ export async function getLocations() {
     return rows
 }
 
-// TODO delete: was just for testing purposes
-export async function getAirplaneCosts() {
-    const [rows] = await pool.query(`
-        SELECT cost_per_mi, emissions_per_mi
-        FROM transportation_types
-        WHERE name = 'Airplane'
-        `)
-    return rows
-}
-
 export async function getAllActivityTypes() {
     const [rows] = await pool.query(`
     SELECT DISTINCT type
@@ -73,15 +63,13 @@ export async function getGeographyTypes() {
     return rows
 }
 
-export async function getTopFiveStates() {
+export async function getTransportationByName(name) {
     const [rows] = await pool.query(`
-    SELECT state, COUNT(activity_id) AS count
-    FROM activities
-    JOIN locations USING (location_id)
-    GROUP BY state
-    ORDER BY count DESC, state ASC
-    `);
-    return rows;
+    SELECT *
+    FROM transportation_types
+    WHERE name = ?
+    `, name)
+    return rows
 }
 
 /**

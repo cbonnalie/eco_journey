@@ -4,9 +4,10 @@ import {
     getUsers,
     getActivitiesByTypes,
     getLocations,
-    getAirplaneCosts,
     getAllActivityTypes,
-    getGeographyTypes, getTopFiveStates, addUser
+    getGeographyTypes,
+    getTransportationByName,
+    addUser
 } from './database.js'
 
 const app = express()
@@ -63,11 +64,6 @@ app.get("/api/locations", async (req, res) => {
     res.json(locations)
 })
 
-app.get("/api/plane-costs", async (req, res) => {
-    const costs = await getAirplaneCosts()
-    res.json(costs)
-})
-
 app.get("/api/activity-types", async (require,  res) => {
     const types = await getAllActivityTypes()
     res.json(types)
@@ -78,11 +74,13 @@ app.get("/api/geography-types", async (req, res) => {
     res.json(types)
 })
 
-app.get("/api/top-five", async (req, res) => {
-    const topFive = await getTopFiveStates()
-    res.json(topFive)
+app.get("/api/transportation", async (req, res) => {
+    const name = req.query.name
+    const transportation = await getTransportationByName(name)
+    res.json(transportation)
 })
 
 app.listen(5000, () => {
     console.log("Server started on port 5000")
 })
+

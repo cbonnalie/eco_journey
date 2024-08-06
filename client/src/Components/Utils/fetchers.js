@@ -13,23 +13,6 @@ export const fetchLocations = async (setLocations) => {
     }
 }
 
-export const fetchAirplaneCosts = async (setAirplaneCosts) => {
-    const response = await fetch("/api/plane-costs")
-    const data = await response.json()
-
-    const {cost_per_mi, emissions_per_mi} = data[0]
-
-    const parsedData = {
-        cost_per_mi: parseFloat(cost_per_mi),
-        co2_per_mi: parseFloat(emissions_per_mi)
-    }
-
-    setAirplaneCosts(parsedData)
-    console.log("airplane costs fetched from the backend")
-    console.log(data)
-    console.log(parsedData)
-}
-
 export const fetchActivityTypes = async (setActivityTypes) => {
     const response = await fetch("/api/activity-types")
     const data = await response.json()
@@ -61,9 +44,10 @@ export const fetchActivitiesByType = async (formData, setActivities) => {
     }
 }
 
-export const fetchTopFiveStates = async (setTopFiveStates) => {
-    const response = await fetch("/api/top-five-states")
+export const fetchTransportationByName = async (name) => {
+    const response = await fetch(`/api/transportation?name=${name}`)
     const data = await response.json()
-    setTopFiveStates(data)
-    console.log("top five states fetched from the backend")
+    return data.map(({transport_id, name, cost_per_mi, emissions_per_mi}) => ({
+        transport_id, name, cost_per_mi, emissions_per_mi
+    }))[0]
 }
