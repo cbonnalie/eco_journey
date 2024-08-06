@@ -6,7 +6,7 @@ import {
     getLocations,
     getAirplaneCosts,
     getAllActivityTypes,
-    getGeographyTypes, getTopFiveStates
+    getGeographyTypes, getTopFiveStates, addUser
 } from './database.js'
 
 const app = express()
@@ -21,6 +21,20 @@ app.get("/api", async (req, res) => {
     console.log("/api route hit");
     res.json({message: "API is working"});
 })
+
+/**
+ * Register a new user
+ */
+app.post("/api/register", async (req, res) => {
+    try {
+        const userData = req.body;
+        const result = await addUser(userData);
+        res.status(201).json({ message: "User registered successfully", user_id: result.insertId });
+    } catch (error) {
+        console.error("Error registering user:", error);
+        res.status(500).json({ message: "Error registering user." });
+    }
+});
 
 /**
  * Get all users

@@ -1,6 +1,6 @@
 import mysql from 'mysql2'
 import dotenv from 'dotenv'
-
+import bcrypt from 'bcrypt'
 dotenv.config()
 
 const pool = mysql.createPool({
@@ -82,4 +82,26 @@ export async function getTopFiveStates() {
     ORDER BY count DESC, state ASC
     `);
     return rows;
+}
+
+/**
+ * Add a new user to the database
+ * @param {Object} userData - The user data object
+ */
+export async function addUser(userData) {
+    const {username, password, email } = userData;
+
+    // Check for existing user
+    const [existingUsers] = await pool.query('SELECT * FROM users WHERE username = ? OR email = ?', [username, email]);
+    if (existingUsers.length > 0) {
+        throw new Error('Username or email already exists');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const [result] = await pool.query(
+        'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
+        [username, hashedPassword, email]
+    );
+
+    return result;
 }

@@ -17,14 +17,33 @@ const Login = () => {
         })
     }
 
-    const handleLogin = (e) => {
-        e.preventDefault()
+    const handleLogin = async (e) => {
+        e.preventDefault();
         if (isFormValid()) {
-            window.location.href = "/question-form";
+            try {
+                const response = await fetch("http://localhost:5000/api/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem("token", data.token);
+                    window.location.href = "/question-form";
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.message || "Invalid username or password.");
+                }
+            } catch (error) {
+                alert("Network error. Please try again.");
+            }
         } else {
-            alert("Please fill out all fields")
+            alert("Please fill out all fields");
         }
-    }
+    };
     
     const isFormValid = () => {
         return formData.username && formData.password
