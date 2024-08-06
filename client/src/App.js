@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom"; // Import Navigate
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./Components/Pages/Login";
 import Register from "./Components/Pages/Register";
 import ForgotPassword from "./Components/Pages/ForgotPassword";
@@ -7,8 +7,7 @@ import QuestionForm from "./Components/Pages/QuestionForm";
 import Itinerary from "./Components/Pages/Itinerary";
 import About from "./Components/Pages/About";
 import SavedTrips from "./Components/Pages/SavedTrips";
-import Header from "./Components/Assets/Header";
-import {fetchLocations} from "./Components/Utils/fetchers"; // Adjust the path as needed
+import {fetchLocations} from "./Components/Utils/fetchers";
 
 
 /**

@@ -25,14 +25,11 @@ export async function getUsers() {
  * @returns {Promise<*>} - the activities that match the types
  */
 export async function getActivitiesByTypes(types) {
-    // create a string of question marks for the number of types
-    // e.g. types = ['hiking', 'biking'] => temp = '?,?'
-    const temp = types.map(() => '?').join(',')
-    // SELECT name FROM activities WHERE type IN (?,?)
+    const placeholder = types.map(() => '?').join(',')
     const [rows] = await pool.query(`
-        SELECT name 
+        SELECT *
         FROM activities 
-        WHERE type IN (${temp})
+        WHERE type IN (${placeholder})
         `, types)
     return rows
 }
@@ -43,7 +40,7 @@ export async function getActivitiesByTypes(types) {
  */
 export async function getLocations() {
     const [rows] = await pool.query(`
-        SELECT city, state, latitude, longitude, geographical_feature
+        SELECT city, state, latitude, longitude, geographical_feature, location_id
         FROM locations
         ORDER BY state, city
         `)
@@ -74,4 +71,15 @@ export async function getGeographyTypes() {
     FROM locations
     `)
     return rows
+}
+
+export async function getTopFiveStates() {
+    const [rows] = await pool.query(`
+    SELECT state, COUNT(activity_id) AS count
+    FROM activities
+    JOIN locations USING (location_id)
+    GROUP BY state
+    ORDER BY count DESC, state ASC
+    `);
+    return rows;
 }
