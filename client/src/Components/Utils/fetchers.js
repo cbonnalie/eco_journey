@@ -51,3 +51,27 @@ export const fetchTransportationByName = async (name) => {
         transport_id, name, cost_per_mi, emissions_per_mi
     }))[0]
 }
+
+export const fetchActivitiesByTripId = async (trip_id) => {
+    const response = await fetch(`/api/activities-by-trip-id?trip_id=${trip_id}`)
+    const data = await response.json()
+    return data.map(({activity_id, name, type, location_id, cost, co2_emissions}) => ({
+        activity_id, name, type, location_id, cost, co2_emissions
+    }))
+}
+
+export const fetchLocationsByTripId = async (trip_id) => {
+    const response = await fetch(`/api/locations-by-trip-id?trip_id=${trip_id}`)
+    const data = await response.json()
+    return data.map(({city, state, latitude, longitude, geographical_feature, location_id}) => ({
+        city, state, latitude, longitude, geographical_feature, location_id
+    }))
+}
+
+export const fetchTransportationByTripId = async (trip_id) => {
+    const response = await fetch(`/api/transportation-by-trip-id?trip_id=${trip_id}`)
+    const data = await response.json()
+    return data.map(({transport_id, name, cost_per_mi, emissions_per_mi}) => ({
+        transport_id, name, cost_per_mi, emissions_per_mi
+    }))
+}

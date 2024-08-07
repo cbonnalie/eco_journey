@@ -1,6 +1,7 @@
 import mysql from 'mysql2'
 import dotenv from 'dotenv'
 import bcrypt from 'bcrypt'
+
 dotenv.config()
 
 const pool = mysql.createPool({
@@ -77,7 +78,7 @@ export async function getTransportationByName(name) {
  * @param {Object} userData - The user data object
  */
 export async function addUser(userData) {
-    const {username, password, email } = userData;
+    const {username, password, email} = userData;
 
     // Check for existing user
     const [existingUsers] = await pool.query('SELECT * FROM users WHERE username = ? OR email = ?', [username, email]);
@@ -93,3 +94,117 @@ export async function addUser(userData) {
 
     return result;
 }
+
+export async function addTrip(tripData) {
+    try {
+        const {user_id, total_cost, total_emissions} = tripData;
+        const [result] = await pool.query(
+            'INSERT INTO trips (user_id, total_cost, total_emissions) VALUES (?, ?, ?)',
+            [user_id, total_cost, total_emissions]
+        );
+        console.log('Trip added. trip id: ', result.insertId)
+        return result;
+    } catch (error) {
+        console.error('Error adding trip:', error);
+        throw error;
+    }
+}
+
+export async function addTripActivities(trip_id, activities) {
+    try {
+        const values = activities.map(activity => [trip_id, activity.activity_id]);
+        await pool.query(
+            'INSERT INTO trip_activities (trip_id, activity_id) VALUES ?',
+            [values]
+        );
+        console.log('Trip activities added:', values)
+    } catch (error) {
+        console.error('Error adding trip activities:', error);
+        throw error;
+    }
+}
+
+export async function addTripLocations(trip_id, locations) {
+    try {
+        const values = locations.map(location => [trip_id, location.location_id]);
+        await pool.query(
+            'INSERT INTO trip_locations (trip_id, location_id) VALUES ?',
+            [values]
+        );
+        console.log('Trip locations added:', values)
+    } catch (error) {
+        console.error('Error adding trip locations:', error);
+        throw error;
+    }
+}
+
+export async function addTripTransportation(trip_id, transportation) {
+    try {
+        const {transport_id, distance_mi, total_cost, total_emissions} = transportation;
+        await pool.query(
+            'INSERT INTO trip_transportation (trip_id, transport_id, distance_mi, total_cost, total_emissions) VALUES (?, ?, ?, ?, ?)',
+            [trip_id, transport_id, distance_mi, total_cost, total_emissions]
+        );
+        console.log('Trip transportation added:', transportation)
+    } catch (error) {
+        console.error('Error adding trip transportation:', error);
+        throw error;
+    }
+}
+
+export async function saveTrip(saveData) {
+    try {
+        const {user_id, trip_id, saved_at} = saveData;
+        const [result] = await pool.query(
+            'INSERT INTO saved_trips (user_id, trip_id, saved_at) VALUES (?, ?, ?)',
+            [user_id, trip_id, saved_at]
+        );
+        console.log('Trip saved:', result.saved_id)
+        return result;
+    } catch (error) {
+        console.error('Error saving trip:', error);
+        throw error;
+    }
+}
+
+export async function getSavedTrips(user_id) {
+    const [rows] = await pool.query(`
+    SELECT trips.*
+    FROM trips
+    JOIN saved_trips USING (trip_id)
+    WHERE saved_trips.user_id = ?
+    ORDER BY saved_trips.saved_at DESC
+    `, [user_id]);
+    return rows;
+}
+
+export async function getActivitiesByTripId(trip_id) {
+    const [rows] = await pool.query(`
+    SELECT activities.*
+    FROM activities
+    JOIN trip_activities USING (activity_id)
+    WHERE trip_id = ?
+    `, [trip_id]);
+    return rows;
+}
+
+export async function getLocationsByTripId(trip_id) {
+    const [rows] = await pool.query(`
+    SELECT locations.*
+    FROM locations
+    JOIN trip_locations USING (location_id)
+    WHERE trip_id = ?
+    `, [trip_id]);
+    return rows;
+}
+
+export async function getTransportationByTripId(trip_id) {
+    const [rows] = await pool.query(`
+    SELECT transportation_types.*
+    FROM transportation_types
+    JOIN trip_transportation USING (transport_id)
+    WHERE trip_id = ?
+    `, [trip_id]);
+    return rows;
+}
+
