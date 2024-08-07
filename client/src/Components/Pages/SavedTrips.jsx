@@ -1,6 +1,7 @@
 import {useState, useEffect} from "react";
 import Header from "../Assets/Header";
 import {getStateFullName} from "../Utils/getStateFullName";
+import {timeDateFormatter} from "../Utils/timeDateFormatter";
 import {fetchActivitiesByTripId, fetchLocationsByTripId, fetchTransportationByTripId} from "../Utils/fetchers";
 import "../Styles/itin.css";
 
@@ -17,10 +18,11 @@ const SavedTrips = () => {
                 const response = await fetch(`/api/saved-trips/${user_id}`);
                 const data = await response.json();
 
-                const formattedData = data.map(({trip_id, total_cost, total_emissions}) => ({
+                const formattedData = data.map(({trip_id, total_cost, total_emissions, saved_at}) => ({
                     trip_id,
                     total_cost,
-                    total_emissions
+                    total_emissions,
+                    saved_at
                 }));
 
                 setSavedTrips(formattedData);
@@ -50,11 +52,20 @@ const SavedTrips = () => {
         </div>
     );
 
-    const TripHeader = ({trip_id}) => (
-        <div className="trip-header">
-            <h1><b>Trip ID: {trip_id}</b></h1>
-        </div>
-    );
+    const TripHeader = ({trip}) => {
+        const tripLocations = locations.find(l => l.trip_id === trip.trip_id)?.locations || [];
+        // seems to always pull the correct state,
+        // but breaks if the ternary operator is removed!?
+        const state = tripLocations.length > 0 ? tripLocations[0].state : "Unknown State";
+        const stateFullName = getStateFullName(state);
+
+        return (
+            <div className="trip-header">
+                <h1><b>{stateFullName}</b></h1>
+                <p>Saved at: {timeDateFormatter(trip.saved_at)}</p>
+            </div>
+        );
+    };
 
     const ItineraryContainer = ({trip}) => {
         /* using optional chaining (?.) here since a user could
@@ -103,7 +114,7 @@ const SavedTrips = () => {
             <div className={"itinerary-wrapper"}>
                 {savedTrips.map((trip, index) => (
                     <div key={index}>
-                        <TripHeader index={index} trip_id={trip.trip_id}/>
+                        <TripHeader index={index} trip={trip}/>
                         <ItineraryContainer trip={trip}/>
                     </div>
                 ))}

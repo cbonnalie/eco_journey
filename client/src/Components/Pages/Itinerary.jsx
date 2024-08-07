@@ -12,14 +12,14 @@ const Itinerary = ({formData, locations}) => {
 
     const [trips, setTrips] = useState([]);
     const [validActivities, setValidActivities] = useState([]);
-    const [saveButtonDisabled, setSaveButtonDisabled] = useState({});
+    const [saveButtonEnabled, setSaveButtonEnabled] = useState({});
 
     const validLocations = useMemo(() => locations.filter((location) => {
         const hasChosenActivity = validActivities.some(activity => activity.location_id === location.location_id);
         return formData.geography.includes(location.geographical_feature) && hasChosenActivity;
-    }), [locations,  validActivities, formData.geography]);
+    }), [locations, validActivities, formData.geography]);
 
-    const uniqueStates = useMemo(() => 
+    const uniqueStates = useMemo(() =>
         [...new Set(validLocations.map(location => location.state))], [validLocations])
 
     useEffect(() => {
@@ -58,11 +58,12 @@ const Itinerary = ({formData, locations}) => {
         .sort((a, b) => b.activityCount - a.activityCount || a.distance - b.distance)
         .slice(0, 5), [uniqueStates]);
 
+    // TODO desperately needs a refactor
     useEffect(() => {
-        
+
         const fetchData = async () => {
             const newTrips = await Promise.all(topFiveStates.map(async (stateObj) => {
-                const { state, distance } = stateObj;
+                const {state, distance} = stateObj;
                 const locations = validLocations.filter(location => location.state === state);
                 const activities = validActivities.filter(activity => locations.some(location => location.location_id === activity.location_id));
                 const activityCost = activities.reduce((acc, activity) => acc + parseFloat(activity.cost), 0);
@@ -88,14 +89,15 @@ const Itinerary = ({formData, locations}) => {
                 });
 
                 const trip = await tripResult.json();
-                
+
                 await fetch("/api/add-trip-activities", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ 
-                        trip_id: trip.trip_id, activities })
+                    body: JSON.stringify({
+                        trip_id: trip.trip_id, activities
+                    })
                 });
 
                 await fetch("/api/add-trip-locations", {
@@ -103,7 +105,7 @@ const Itinerary = ({formData, locations}) => {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ trip_id: trip.trip_id, locations })
+                    body: JSON.stringify({trip_id: trip.trip_id, locations})
                 });
 
                 await fetch("/api/add-trip-transportation", {
@@ -149,7 +151,7 @@ const Itinerary = ({formData, locations}) => {
             saved_at: new Date().toISOString().slice(0, 19).replace("T", " ")
         };
 
-        setSaveButtonDisabled(prevState => ({ ...prevState, [trip.trip_id]: true }));
+        setSaveButtonEnabled(prevState => ({...prevState, [trip.trip_id]: true}));
 
         try {
             const response = await fetch("/api/save-trip", {
@@ -164,14 +166,14 @@ const Itinerary = ({formData, locations}) => {
                 console.log("Trip saved successfully");
             } else {
                 console.error("Error saving trip");
-                setSaveButtonDisabled(prevState => ({ ...prevState, [trip.trip_id]: false }));
+                setSaveButtonEnabled(prevState => ({...prevState, [trip.trip_id]: false}));
             }
         } catch (error) {
             console.error("Error saving trip:", error);
-            setSaveButtonDisabled(prevState => ({ ...prevState, [trip.trip_id]: false }));
+            setSaveButtonEnabled(prevState => ({...prevState, [trip.trip_id]: false}));
         }
     };
-    
+
     const ItineraryHeader = ({formData}) => (
         <div className={"itinerary-header"}>
             <h1>Finding Your Next Adventure</h1>
@@ -181,16 +183,23 @@ const Itinerary = ({formData, locations}) => {
         </div>
     );
 
-    const TripHeader = ({index, state}) => (
+    const TripHeader = ({index, state, trip}) => (
         <div className="trip-header">
-            <h1><b>{index + 1}: {getStateFullName(state)}</b></h1>
+            <h1>
+                <b>{index + 1}: {getStateFullName(state)}</b>
+            </h1>
+                <button
+                    onClick={() => saveTrip(trip)}
+                    disabled={saveButtonEnabled[trip.trip_id]}
+                ><b>Save Trip</b>
+                </button>
         </div>
     );
 
     const ItineraryContainer = ({trip}) => {
 
-        const { activities, locations, transportation, total_cost, total_emissions, distance } = trip;
-        
+        const {activities, locations, transportation, total_cost, total_emissions, distance} = trip;
+
         return (
             <div className="itinerary-container">
                 <p>
@@ -207,12 +216,6 @@ const Itinerary = ({formData, locations}) => {
                 {locations.map((location, index) => (
                     <ActivityList key={index} location={location} chosenActivities={activities}/>
                 ))}
-                <button 
-                    onClick={() => saveTrip(trip)}
-                    disabled={saveButtonDisabled[trip.trip_id]}
-                >
-                    Save Trip
-                </button>
             </div>)
     }
 
@@ -236,7 +239,7 @@ const Itinerary = ({formData, locations}) => {
 
                 {trips.map((trip, index) => (
                     <div key={index}>
-                        <TripHeader index={index} state={trip.state}/>
+                        <TripHeader index={index} state={trip.state} trip={trip}/>
                         <ItineraryContainer trip={trip}/>
                     </div>
                 ))}

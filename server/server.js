@@ -44,15 +44,6 @@ app.post("/api/register", async (req, res) => {
 });
 
 /**
- * Get all users
- * TODO: delete
- */
-app.get("/api/users", async (req, res) => {
-    const users = await getUsers()
-    res.send(users)
-})
-
-/**
  * Get activities by type. The types are passed as a query parameter
  * e.g. /api/activities?types=hiking,biking
  */

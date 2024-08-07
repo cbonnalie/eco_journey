@@ -169,7 +169,7 @@ export async function saveTrip(saveData) {
 
 export async function getSavedTrips(user_id) {
     const [rows] = await pool.query(`
-    SELECT trips.*
+    SELECT trips.*, saved_at
     FROM trips
     JOIN saved_trips USING (trip_id)
     WHERE saved_trips.user_id = ?
