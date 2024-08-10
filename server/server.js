@@ -13,7 +13,12 @@ import {
     addTripLocations,
     addTripTransportation,
     saveTrip,
-    getSavedTrips, getActivitiesByTripId, getLocationsByTripId, getTransportationByTripId, usernameEmailTaken
+    getSavedTrips,
+    getActivitiesByTripId,
+    getLocationsByTripId,
+    getTransportationByTripId,
+    usernameEmailTaken,
+    authenticateUser
 } from './database.js'
 
 const app = express()
@@ -111,6 +116,18 @@ app.get("/api/username-email-taken", async (req, res) => {
     const email = req.query.email
     const taken = await usernameEmailTaken(username, email)
     res.json({taken})
+})
+
+app.get("/api/login", async (req, res) => {
+    const username = req.query.username
+    const password = req.query.password
+    const user = await authenticateUser(username, password)
+    if (user) {
+        console.log("server:", user)
+        res.json(user)
+    } else {
+        res.json(null)
+    }
 })
 
 app.listen(5000, () => {

@@ -17,6 +17,11 @@ import {fetchLocations} from "./Components/Utils/fetchers";
  */
 const App = () => {
 
+    const [user, setUser] = useState({
+        username: "",
+        id: ""
+    })
+    
     /* This state holds data from the form users fill out
     on the home page. It is passed down to the Itinerary component.*/
     const [formData, setFormData] = useState({
@@ -63,7 +68,11 @@ const App = () => {
     return (
             <Routes>
                 <Route path="/" element={<About />} />
-                <Route path="/login" element={<Login />} />
+                <Route path="/login" element={
+                    <Login 
+                        setUser={setUser}
+                    />
+                } />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/question-form" element={

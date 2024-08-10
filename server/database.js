@@ -217,3 +217,25 @@ export async function usernameEmailTaken(username, email) {
     return rows.count > 0;
 }
 
+export async function authenticateUser(username, password) {
+    const [[rows]] = await pool.query(`
+        SELECT *
+        FROM users
+        WHERE username = ?
+        `, username)
+    
+    if (rows.length === 0) {
+        return null
+    }
+    
+    const passwordMatches = await bcrypt.compare(password, rows.password)
+    
+    if (passwordMatches) {
+        console.log("db:", rows)
+        return rows
+    } else {
+        return null
+    }
+}
+
+

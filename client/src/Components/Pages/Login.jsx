@@ -2,12 +2,15 @@ import React, {useState} from "react";
 import {FaLock, FaUser} from "react-icons/fa";
 import "../Styles/Form.css";
 import {Navigate} from "react-router-dom";
+import {fetchUserId} from "../Utils/fetchers";
 
-const Login = () => {
+const Login = ({setUser}) => {
     const [formData, setFormData] = useState({
         username: "",
         password: ""
     })
+    
+    const [error, setError] = useState(null)
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
@@ -19,35 +22,18 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        if (isFormValid()) {
-            try {
-                const response = await fetch("http://localhost:5000/api/login", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(formData),
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    localStorage.setItem("token", data.token);
-                    window.location.href = "/question-form";
-                } else {
-                    const errorData = await response.json();
-                    alert(errorData.message || "Invalid username or password.");
-                }
-            } catch (error) {
-                alert("Network error. Please try again.");
-            }
+        const response = await fetchUserId(formData.username, formData.password)
+        if (response) {
+            console.log(response)
+            console.log("Login successful")
+            setUser({username: formData.username, id: response})
+            window.location.href = "/question-form"
         } else {
-            alert("Please fill out all fields");
+            setError("Invalid username or password")
         }
-    };
+    }    
     
-    const isFormValid = () => {
-        return formData.username && formData.password
-    }
+    
 
     return (
         <div className="center-container">
@@ -57,6 +43,7 @@ const Login = () => {
             <div className={"wrapper"}>
                 <form onSubmit={handleLogin}>
                     <h1>Login</h1>
+                    {error && <div className="error">{error}</div>}
                     <div className={"input-box"}>
                         <input 
                             type={"text"} 

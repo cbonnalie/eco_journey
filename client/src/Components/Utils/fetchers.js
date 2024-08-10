@@ -81,3 +81,11 @@ export const fetchUsernameEmailTaken = async (username, email) => {
     const data = await response.json()
     return data.taken
 }
+
+export const fetchUserId = async (username, password) => {
+    const response = await fetch(`/api/login?username=${username}&password=${password}`)
+    const data = await response.json()
+    console.log("fetchers:", data.user_id)
+    return data.user_id
+}
+
