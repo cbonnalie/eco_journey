@@ -1,10 +1,11 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {FaLock, FaUser} from "react-icons/fa";
 import "../Styles/Form.css";
 import {Navigate} from "react-router-dom";
 import {fetchUserId} from "../Utils/fetchers";
 
 const Login = ({setUser}) => {
+    
     const [formData, setFormData] = useState({
         username: "",
         password: ""
@@ -33,8 +34,10 @@ const Login = ({setUser}) => {
         }
     }    
     
+    useEffect(() => {
+        setUser({username: "", id: ""})
+    }, [setUser])
     
-
     return (
         <div className="center-container">
             <div className={"logo-container"}>

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Routes, Route, Navigate} from "react-router-dom";
 import Login from "./Components/Pages/Login";
 import Register from "./Components/Pages/Register";
 import ForgotPassword from "./Components/Pages/ForgotPassword";
@@ -8,7 +8,7 @@ import Itinerary from "./Components/Pages/Itinerary";
 import About from "./Components/Pages/About";
 import SavedTrips from "./Components/Pages/SavedTrips";
 import {fetchLocations} from "./Components/Utils/fetchers";
-
+import Header from "./Components/Assets/Header";
 
 /**
  * The main component for the application. It is responsible for rendering
@@ -17,11 +17,18 @@ import {fetchLocations} from "./Components/Utils/fetchers";
  */
 const App = () => {
 
-    const [user, setUser] = useState({
-        username: "",
-        id: ""
+    const [user, setUser] = useState(() => {
+        const savedUser = localStorage.getItem("user")
+        return savedUser ? JSON.parse(savedUser) : {username: "", id: ""}
     })
     
+    useEffect(() => {
+        console.log("user updated:")
+        console.log("username:",user.username)
+        console.log("ID:",user.id)
+        localStorage.setItem("user", JSON.stringify(user))
+    }, [user])
+
     /* This state holds data from the form users fill out
     on the home page. It is passed down to the Itinerary component.*/
     const [formData, setFormData] = useState({
@@ -66,15 +73,17 @@ const App = () => {
      * @returns {JSX.Element}
      */
     return (
+        <>
+            <Header user={user}/>
             <Routes>
-                <Route path="/" element={<About />} />
+                <Route path="/" element={<About/>}/>
                 <Route path="/login" element={
-                    <Login 
+                    <Login
                         setUser={setUser}
                     />
-                } />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/register" element={<Register />} />
+                }/>
+                <Route path="/forgot-password" element={<ForgotPassword/>}/>
+                <Route path="/register" element={<Register/>}/>
                 <Route path="/question-form" element={
                     <QuestionForm
                         formData={formData}
@@ -88,9 +97,10 @@ const App = () => {
                         locations={locations}
                     />}
                 />
-                <Route path="/saved-trips" element={<SavedTrips />} />
+                <Route path="/saved-trips" element={<SavedTrips/>}/>
             </Routes>
-        );
+        </>
+    );
 };
 
 export default App;

@@ -133,13 +133,8 @@ select {
     text-align: center;
 }
 
-nav {
-    display: flex;
-    justify-content: center; /* Center the links horizontally */
-}
-
 .nav-link {
-    margin: 0 15px; /* Adjust the value as needed */
+    margin-right: 50px;
     text-decoration: none; /* Remove underline */
     color: #FFFFFF;
 }

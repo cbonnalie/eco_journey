@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useState} from "react";
 import $ from "jquery";
-import Header from "../Assets/Header";
 import {fetchActivityTypes, fetchGeographyTypes} from "../Utils/fetchers"
 
 /**
@@ -233,7 +232,6 @@ const QuestionForm = ({formData, setFormData, locations}) => {
 
     return (
         <div>
-            <Header/>
             <div className={"wrapper"}>
                 <form onSubmit={handleSubmit}>
                     {currentIndex === 0 && renderActivitiesForm()}

@@ -1,15 +1,18 @@
 import React from "react";
 import Navigation from "./Navigation"; // Import Navigation component
 
-const Header = () => {
+const Header = ({user}) => {
     return (
-        <header style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
-            justifyContent: 'center', width: '100%', padding: '10px 0' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <img src="/ej_logo.png" alt="Eco Journey Logo" style={{ height: '50px', marginRight: '10px' }} />
-                <h1>Eco Journey</h1>
+        <header>
+            <Navigation/>
+            
+            <div className={"logo-container"}>
+                <img src="/ej_logo.png" alt="Eco Journey Logo"/>
             </div>
-            <Navigation /> {/* Add Navigation component */}
+            
+            <div className={"user-info"}>
+                {user.username ? <p>Welcome, {user.username}</p> : <p>Not logged in</p>}
+            </div>
         </header>
     );
 };
