@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import "../Styles/Form.css";
 import { FaUser, FaLock } from "react-icons/fa";
+import {fetchUsernameEmailTaken} from "../Utils/fetchers";
 
 const Register = () => {
 
@@ -17,7 +18,14 @@ const Register = () => {
             setError("Passwords do not match.");
             return;
         }
-
+        
+        const taken = await fetchUsernameEmailTaken(username, email);
+        
+        if (taken) {
+            setError("Username or email already taken.");
+            return;
+        }
+        
         const userData = {
             username,
             password,

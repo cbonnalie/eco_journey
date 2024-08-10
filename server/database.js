@@ -208,3 +208,12 @@ export async function getTransportationByTripId(trip_id) {
     return rows;
 }
 
+export async function usernameEmailTaken(username, email) {
+    const [[rows]] = await pool.query(`
+        SELECT COUNT(*) as count
+        FROM users 
+        WHERE username = ? 
+        OR email = ?`, [username, email]);
+    return rows.count > 0;
+}
+

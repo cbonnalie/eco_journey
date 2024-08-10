@@ -75,3 +75,9 @@ export const fetchTransportationByTripId = async (trip_id) => {
         transport_id, name, cost_per_mi, emissions_per_mi
     }))
 }
+
+export const fetchUsernameEmailTaken = async (username, email) => {
+    const response = await fetch(`/api/username-email-taken?username=${username}&email=${email}`)
+    const data = await response.json()
+    return data.taken
+}

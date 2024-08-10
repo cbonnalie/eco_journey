@@ -13,7 +13,7 @@ import {
     addTripLocations,
     addTripTransportation,
     saveTrip,
-    getSavedTrips, getActivitiesByTripId, getLocationsByTripId, getTransportationByTripId
+    getSavedTrips, getActivitiesByTripId, getLocationsByTripId, getTransportationByTripId, usernameEmailTaken
 } from './database.js'
 
 const app = express()
@@ -36,10 +36,10 @@ app.post("/api/register", async (req, res) => {
     try {
         const userData = req.body;
         const result = await addUser(userData);
-        res.status(201).json({ message: "User registered successfully", user_id: result.insertId });
+        res.status(201).json({message: "User registered successfully", user_id: result.insertId});
     } catch (error) {
         console.error("Error registering user:", error);
-        res.status(500).json({ message: "Error registering user." });
+        res.status(500).json({message: "Error registering user."});
     }
 });
 
@@ -61,7 +61,7 @@ app.get("/api/locations", async (req, res) => {
     res.json(locations)
 })
 
-app.get("/api/activity-types", async (require,  res) => {
+app.get("/api/activity-types", async (require, res) => {
     const types = await getAllActivityTypes()
     res.json(types)
 })
@@ -84,7 +84,7 @@ app.get("/api/saved-trips/:user_id", async (req, res) => {
         res.json(savedTrips);
     } catch (error) {
         console.error("Error fetching saved trips:", error);
-        res.status(500).json({ message: "Error fetching saved trips." });
+        res.status(500).json({message: "Error fetching saved trips."});
     }
 });
 
@@ -106,6 +106,13 @@ app.get("/api/transportation-by-trip-id", async (req, res) => {
     res.json(transportation)
 })
 
+app.get("/api/username-email-taken", async (req, res) => {
+    const username = req.query.username
+    const email = req.query.email
+    const taken = await usernameEmailTaken(username, email)
+    res.json({taken})
+})
+
 app.listen(5000, () => {
     console.log("Server started on port 5000")
 })
@@ -114,43 +121,43 @@ app.post("/api/add-trip", async (req, res) => {
     try {
         const tripData = req.body;
         const result = await addTrip(tripData);
-        res.status(201).json({ trip_id: result.insertId });
+        res.status(201).json({trip_id: result.insertId});
     } catch (error) {
         console.error("Error adding trip:", error);
-        res.status(500).json({ message: "Error adding trip." });
+        res.status(500).json({message: "Error adding trip."});
     }
 });
 
 app.post("/api/add-trip-activities", async (req, res) => {
     try {
-        const { trip_id, activities } = req.body;
+        const {trip_id, activities} = req.body;
         await addTripActivities(trip_id, activities);
-        res.status(201).json({ message: "Trip activities added successfully" });
+        res.status(201).json({message: "Trip activities added successfully"});
     } catch (error) {
         console.error("Error adding trip activities:", error);
-        res.status(500).json({ message: "Error adding trip activities." });
+        res.status(500).json({message: "Error adding trip activities."});
     }
 });
 
 app.post("/api/add-trip-locations", async (req, res) => {
     try {
-        const { trip_id, locations } = req.body;
+        const {trip_id, locations} = req.body;
         await addTripLocations(trip_id, locations);
-        res.status(201).json({ message: "Trip locations added successfully" });
+        res.status(201).json({message: "Trip locations added successfully"});
     } catch (error) {
         console.error("Error adding trip locations:", error);
-        res.status(500).json({ message: "Error adding trip locations." });
+        res.status(500).json({message: "Error adding trip locations."});
     }
 });
 
 app.post("/api/add-trip-transportation", async (req, res) => {
     try {
-        const { trip_id, transport_id, distance_mi, total_cost, total_emissions } = req.body;
-        await addTripTransportation(trip_id, { transport_id, distance_mi, total_cost, total_emissions });
-        res.status(201).json({ message: "Trip transportation added successfully" });
+        const {trip_id, transport_id, distance_mi, total_cost, total_emissions} = req.body;
+        await addTripTransportation(trip_id, {transport_id, distance_mi, total_cost, total_emissions});
+        res.status(201).json({message: "Trip transportation added successfully"});
     } catch (error) {
         console.error("Error adding trip transportation:", error);
-        res.status(500).json({ message: "Error adding trip transportation." });
+        res.status(500).json({message: "Error adding trip transportation."});
     }
 });
 
@@ -158,10 +165,10 @@ app.post("/api/save-trip", async (req, res) => {
     try {
         const saveData = req.body;
         const result = await saveTrip(saveData);
-        res.status(201).json({ message: "Trip saved successfully", saved_id: result.insertId });
+        res.status(201).json({message: "Trip saved successfully", saved_id: result.insertId});
     } catch (error) {
         console.error("Error saving trip:", error);
-        res.status(500).json({ message: "Error saving trip." });
+        res.status(500).json({message: "Error saving trip."});
     }
 });
 
