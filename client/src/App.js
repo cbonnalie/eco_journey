@@ -21,11 +21,11 @@ const App = () => {
         const savedUser = localStorage.getItem("user")
         return savedUser ? JSON.parse(savedUser) : {username: "", id: ""}
     })
-    
+
     useEffect(() => {
         console.log("user updated:")
-        console.log("username:",user.username)
-        console.log("ID:",user.id)
+        console.log("username:", user.username)
+        console.log("ID:", user.id)
         localStorage.setItem("user", JSON.stringify(user))
     }, [user])
 
@@ -95,9 +95,14 @@ const App = () => {
                     <Itinerary
                         formData={formData}
                         locations={locations}
+                        user={user}
                     />}
                 />
-                <Route path="/saved-trips" element={<SavedTrips/>}/>
+                <Route path="/saved-trips" element={
+                    <SavedTrips
+                        user={user}
+                    />}
+                />
             </Routes>
         </>
     );

@@ -4,11 +4,10 @@ import {
     fetchActivitiesByType,
     fetchTransportationByName
 } from "../Utils/fetchers";
-import Header from "../Assets/Header";
 import {calculateDistance} from "../Utils/calculateDistance";
 import {getStateFullName} from "../Utils/getStateFullName";
 
-const Itinerary = ({formData, locations}) => {
+const Itinerary = ({formData, locations, user}) => {
 
     const [trips, setTrips] = useState([]);
     const [validActivities, setValidActivities] = useState([]);
@@ -75,7 +74,7 @@ const Itinerary = ({formData, locations}) => {
                 const totalCO2 = transportationCO2 + activityCO2;
 
                 const tripData = {
-                    user_id: 1,
+                    user_id: user.id,
                     total_cost: totalCost,
                     total_emissions: totalCO2
                 };
@@ -146,7 +145,7 @@ const Itinerary = ({formData, locations}) => {
 
     const saveTrip = async (trip) => {
         const saveData = {
-            user_id: 1, // Replace with the actual user ID
+            user_id: user.id,
             trip_id: trip.trip_id,
             saved_at: new Date().toISOString().slice(0, 19).replace("T", " ")
         };
@@ -232,7 +231,6 @@ const Itinerary = ({formData, locations}) => {
 
     return (
         <div>
-            <Header/>
             <ItineraryHeader formData={formData}/>
 
             <div className={"itinerary-wrapper"}>

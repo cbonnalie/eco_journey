@@ -136,7 +136,7 @@ select {
 .nav-link {
     margin-right: 50px;
     text-decoration: none; /* Remove underline */
-    color: #FFFFFF;
+    color: #ffffff;
 }
 
 .nav-link:hover {

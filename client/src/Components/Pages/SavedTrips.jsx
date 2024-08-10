@@ -5,7 +5,7 @@ import {timeDateFormatter} from "../Utils/timeDateFormatter";
 import {fetchActivitiesByTripId, fetchLocationsByTripId, fetchTransportationByTripId} from "../Utils/fetchers";
 import "../Styles/itin.css";
 
-const SavedTrips = () => {
+const SavedTrips = ({user}) => {
     const [savedTrips, setSavedTrips] = useState([]);
     const [activities, setActivities] = useState([]);
     const [locations, setLocations] = useState([]);
@@ -14,7 +14,7 @@ const SavedTrips = () => {
     useEffect(() => {
         const fetchSavedTrips = async () => {
             try {
-                const user_id = 1; //TODO Replace with the actual user ID
+                const user_id = user.id;
                 const response = await fetch(`/api/saved-trips/${user_id}`);
                 const data = await response.json();
 
@@ -48,7 +48,7 @@ const SavedTrips = () => {
 
     const SavedTripHeader = () => (
         <div className={"itinerary-header"}>
-            <h1>Your Saved Trips</h1>
+            <h1>{user.username}'s Saved Trips</h1>
         </div>
     );
 
@@ -109,7 +109,6 @@ const SavedTrips = () => {
 
     return (
         <div>
-            <Header/>
             <SavedTripHeader/>
             <div className={"itinerary-wrapper"}>
                 {savedTrips.map((trip, index) => (

@@ -49,8 +49,8 @@ header {
     width: 100vw;
     min-height: 5em;
     max-height: 5em;
-    background-color: rgba(128, 128, 128, 0.8);
-    color: white;
+    background-color: rgb(94, 120, 115);
+    color: #ffffff;
     z-index: 9999;
 }
 
@@ -64,17 +64,13 @@ header nav {
 }
 
 header .logo-container {
-    position: relative;
-    height: 4em;
+    height: 5em;
     grid-column: 2;
     justify-self: center;
 }
 
 header .logo-container img {
-    position: absolute;
-    bottom: 0;
-    transform: translateY(50%);
-    max-height: 8em;
+    max-height: 5.5em;
 }
 
 header .user-info {
