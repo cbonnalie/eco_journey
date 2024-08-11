@@ -206,7 +206,8 @@ const Itinerary = ({formData, locations, user}) => {
                     <br/>
                     <b>Distance: </b>{distance.toFixed(2)} miles
                     <br/>
-                    <b>Transportation: </b>{transportation.name}
+                    <b>Transportation: </b>
+                    {transportation.name} (${(distance * transportation.cost_per_mi * 2).toFixed(2)})
                     <br/>
                     <b>Total Cost: </b>${total_cost.toFixed(2)}
                     <br/>
@@ -223,7 +224,7 @@ const Itinerary = ({formData, locations, user}) => {
             <h3><b>{location.city}</b></h3>
             <ul>
                 {chosenActivities.filter(a => a.location_id === location.location_id)
-                    .map(a => <li key={a.activity_id}>{a.name} (ID: {a.activity_id})</li>)}
+                    .map(a => <li key={a.activity_id}>{a.name} (${a.cost})</li>)}
             </ul>
             <br/>
         </div>
