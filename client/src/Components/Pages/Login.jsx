@@ -40,9 +40,9 @@ const Login = ({setUser}) => {
     
     return (
         <div className="center-container">
-            <div className={"logo-container"}>
+            {/*<div className={"logo-container"}>
                 <img src="/ej_logo.png" alt={"Eco Journey Logo"} className={"logo"}/>
-            </div>
+            </div>*/}
             <div className={"wrapper"}>
                 <form onSubmit={handleLogin}>
                     <h1>Login</h1>
@@ -70,10 +70,10 @@ const Login = ({setUser}) => {
                         <FaLock className={"icon"}/>
                     </div>
 
-                    <div className={"remember-forgot"}>
+                    {/*<div className={"remember-forgot"}>
                         <label><input type={"checkbox"}/>Remember me</label>
                         <a href="./forgot-password">Forgot password?</a>
-                    </div>
+                    </div>*/}
 
                     <button type={"submit"}>Login</button>
 

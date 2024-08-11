@@ -126,7 +126,7 @@ app.get("/api/login", async (req, res) => {
         console.log("server:", user)
         res.json(user)
     } else {
-        res.json(null)
+        res.json(false)
     }
 })
 

@@ -134,11 +134,21 @@ select {
 }
 
 .nav-link {
-    margin-right: 50px;
+    margin-right: 4em;
     text-decoration: none; /* Remove underline */
     color: #ffffff;
 }
 
 .nav-link:hover {
     text-decoration: underline; /* Optional: Underline on hover */
+}
+
+.error {
+    text-align: center;
+    color: #ffd600;
+}
+
+.home, .about {
+    width: 50vw;
+    font-size: 20px;
 }

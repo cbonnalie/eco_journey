@@ -5,10 +5,11 @@ import Register from "./Components/Pages/Register";
 import ForgotPassword from "./Components/Pages/ForgotPassword";
 import QuestionForm from "./Components/Pages/QuestionForm";
 import Itinerary from "./Components/Pages/Itinerary";
-import About from "./Components/Pages/About";
+import Home from "./Components/Pages/Home";
 import SavedTrips from "./Components/Pages/SavedTrips";
-import {fetchLocations} from "./Components/Utils/fetchers";
 import Header from "./Components/Assets/Header";
+import About from "./Components/Pages/About";
+import {fetchLocations} from "./Components/Utils/fetchers";
 
 /**
  * The main component for the application. It is responsible for rendering
@@ -33,15 +34,13 @@ const App = () => {
     on the home page. It is passed down to the Itinerary component.*/
     const [formData, setFormData] = useState({
         activities: [],
-        budget: "",
         location: {
             city: "",
             state: "",
             latitude: "",
             longitude: ""
         },
-        geography: [],
-        tripDays: ""
+        geography: []
     })
 
     const [locations, setLocations] = useState([])
@@ -74,9 +73,10 @@ const App = () => {
      */
     return (
         <>
-            <Header user={user}/>
+            <Header user={user} setUser={setUser}/>
             <Routes>
-                <Route path="/" element={<About/>}/>
+                <Route path="/" element={<Home/>}/>
+                <Route path="/about" element={<About/>}/>
                 <Route path="/login" element={
                     <Login
                         setUser={setUser}

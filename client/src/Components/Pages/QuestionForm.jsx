@@ -1,23 +1,10 @@
-import React, {useCallback, useEffect, useState} from "react";
-import $ from "jquery";
+import {useCallback, useEffect, useState} from "react";
 import {fetchActivityTypes, fetchGeographyTypes} from "../Utils/fetchers"
-
-/**
- * Price limits.
- */
-const prices = [
-    "", "100", "200", "300", "400", "500", "600", "700", "800", "900", "1000+"
-]
-
-/**
- * Number of days to travel.
- */
-const days = [1, 2, 3, 4, 5, 6, 7]
-
+import $ from "jquery";
 /**
  * The maximum index of the form.
  */
-const maxIndex = 4;
+const maxIndex = 2;
 
 /**
  * Renders the form that users fill out to get their itinerary.
@@ -85,30 +72,13 @@ const QuestionForm = ({formData, setFormData, locations}) => {
 
     
     const isFormValid = () => {
-        return formData.budget
-            && formData.location.city
+        return formData.location.city
             && formData.activities.length > 0
             && formData.geography.length > 0;
     };
 
     /* Render Functions */
-
-    const renderTripDaysForm = () => (
-        <div className={"option"}>
-            <h1>How long would you like to travel?</h1>
-            <select name="tripDays" onChange={handleInputChange}>
-                <option value={""}>Select a location</option>
-                {days.map((dayCount, index) => (
-                    <option
-                        key={index}
-                        value={dayCount}>
-                        {dayCount} {dayCount === 1 ? "day" : "days"}
-                    </option>
-                ))}
-            </select>
-        </div>
-    )
-
+    
     const renderActivitiesForm = () => (
         <div className={"option"}>
             <h1>Select your preferred activities</h1>
@@ -126,20 +96,7 @@ const QuestionForm = ({formData, setFormData, locations}) => {
             ))}
         </div>
     );
-
-    const renderBudgetForm = () => (
-        <div className={"option"}>
-            <h1>What is your budget?</h1>
-            <select name="budget" onChange={handleInputChange}>
-                {prices.map((price, index) => (
-                    <option key={index} value={price}>
-                        {"$" + price}
-                    </option>
-                ))}
-            </select>
-        </div>
-    );
-
+    
     const renderLocationForm = () => (
         <div className={"option"}>
             <h1>What is your location?</h1>
@@ -190,15 +147,13 @@ const QuestionForm = ({formData, setFormData, locations}) => {
         console.log("resetting form data...")
         const resetFormData = {
             activities: [],
-            budget: "",
             location: {
                 city: "",
                 state: "",
                 latitude: "",
                 longitude: ""
             },
-            geography: [],
-            tripDays: ""
+            geography: []
         }
         setFormData(resetFormData)
         localStorage.setItem("formData", JSON.stringify(resetFormData))
@@ -236,9 +191,7 @@ const QuestionForm = ({formData, setFormData, locations}) => {
                 <form onSubmit={handleSubmit}>
                     {currentIndex === 0 && renderActivitiesForm()}
                     {currentIndex === 1 && renderGeographyForm()}
-                    {currentIndex === 2 && renderLocationForm()}
-                    {currentIndex === 3 && renderBudgetForm()}
-                    {currentIndex === maxIndex && renderTripDaysForm()}
+                    {currentIndex === maxIndex && renderLocationForm()}
                     {renderButtons()} {/* No need to pass the index anymore */}
                 </form>
             </div>

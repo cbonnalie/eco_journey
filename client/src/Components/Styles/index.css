@@ -47,11 +47,12 @@ header {
     top: 0;
     left: 0;
     width: 100vw;
-    min-height: 5em;
-    max-height: 5em;
+    min-height: 5.5em;
+    max-height: 5.5em;
     background-color: rgb(94, 120, 115);
     color: #ffffff;
     z-index: 9999;
+    border-bottom: 2px solid #333433;
 }
 
 
@@ -70,7 +71,7 @@ header .logo-container {
 }
 
 header .logo-container img {
-    max-height: 5.5em;
+    max-height: 5.25em;
 }
 
 header .user-info {
