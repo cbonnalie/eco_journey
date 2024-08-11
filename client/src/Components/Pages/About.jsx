@@ -1,5 +1,8 @@
 import React from "react";
 
+/**
+ * About page component. Contains information about the project and the creators.
+ */
 const About = () => {
 
     return (
@@ -9,12 +12,10 @@ const About = () => {
             <p>
                 Created by Christian Bonnalie, Jarvis Kampe, & Alvaro Valdez-Duran as a project
                 for Database System Design (TCSS 445) at University of Washington Tacoma.
-                
-                
             </p>
         </div>
-    );
-};
+    )
+}
 
 export default About;
 

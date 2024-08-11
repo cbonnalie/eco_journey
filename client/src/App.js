@@ -1,15 +1,19 @@
-import React, {useEffect, useState} from "react";
-import {Routes, Route, Navigate} from "react-router-dom";
-import Login from "./Components/Pages/Login";
-import Register from "./Components/Pages/Register";
-import ForgotPassword from "./Components/Pages/ForgotPassword";
-import QuestionForm from "./Components/Pages/QuestionForm";
-import Itinerary from "./Components/Pages/Itinerary";
-import Home from "./Components/Pages/Home";
-import SavedTrips from "./Components/Pages/SavedTrips";
-import Header from "./Components/Assets/Header";
-import About from "./Components/Pages/About";
-import {fetchLocations} from "./Components/Utils/fetchers";
+// react
+import {useEffect, useState} from "react"
+import {Routes, Route} from "react-router-dom"
+
+// local components
+import Login from "./Components/Pages/Login"
+import Register from "./Components/Pages/Register"
+import ForgotPassword from "./Components/Pages/ForgotPassword"
+import QuestionForm from "./Components/Pages/QuestionForm"
+import Itinerary from "./Components/Pages/Itinerary"
+import Home from "./Components/Pages/Home"
+import SavedTrips from "./Components/Pages/SavedTrips"
+import About from "./Components/Pages/About"
+import Header from "./Components/Assets/Header"
+import ProtectedRoutes from "./Components/Utils/ProtectedRoutes"
+import {fetchLocations} from "./Components/Utils/fetchers"
 
 /**
  * The main component for the application. It is responsible for rendering
@@ -17,95 +21,72 @@ import {fetchLocations} from "./Components/Utils/fetchers";
  * that is passed down to the Home and Itinerary components.
  */
 const App = () => {
-
+    
     const [user, setUser] = useState(() => {
         const savedUser = localStorage.getItem("user")
         return savedUser ? JSON.parse(savedUser) : {username: "", id: ""}
     })
-
-    useEffect(() => {
-        console.log("user updated:")
-        console.log("username:", user.username)
-        console.log("ID:", user.id)
-        localStorage.setItem("user", JSON.stringify(user))
-    }, [user])
-
-    /* This state holds data from the form users fill out
-    on the home page. It is passed down to the Itinerary component.*/
+    
+    // data from questionnaire
     const [formData, setFormData] = useState({
         activities: [],
-        location: {
-            city: "",
-            state: "",
-            latitude: "",
-            longitude: ""
-        },
-        geography: []
+        geography: [],
+        location: {city: "", state: "", latitude: "", longitude: ""}
     })
 
     const [locations, setLocations] = useState([])
-
-    /* Hook runs when the component mounts. It sets the title of the page
-    and retrieves the form data from local storage.*/
+    
     useEffect(() => {
-        document.title = "Eco Journey";
+        // get saved form data from local storage
         const savedFormData = JSON.parse(localStorage.getItem("formData"));
-        if (savedFormData) {
-            setFormData(savedFormData);
-        }
-    }, []);
-
-    /**
-     * Hook runs when the form data changes. It saves the form data to local storage.
-     */
-    useEffect(() => {
-        // save the form data to local storage
-        localStorage.setItem("formData", JSON.stringify(formData));
-    }, [formData]);
-
-    useEffect(() => {
+        if (savedFormData) setFormData(savedFormData)
+        // fetch locations from database
         void fetchLocations(setLocations)
-    }, []);
-
-    /**
-     * Renders the app through the use of Routes. Each Route is a different page.
-     * @returns {JSX.Element}
-     */
+    }, [])
+    
+    useEffect(() => {
+        localStorage.setItem("user", JSON.stringify(user))
+    }, [user])
+    
+    useEffect(() => {
+        localStorage.setItem("formData", JSON.stringify(formData));
+    }, [formData])
+    
     return (
         <>
             <Header user={user} setUser={setUser}/>
             <Routes>
                 <Route path="/" element={<Home/>}/>
                 <Route path="/about" element={<About/>}/>
-                <Route path="/login" element={
-                    <Login
-                        setUser={setUser}
-                    />
-                }/>
+                <Route path="/login" element={<
+                    Login setUser={setUser}
+                />}/>
                 <Route path="/forgot-password" element={<ForgotPassword/>}/>
                 <Route path="/register" element={<Register/>}/>
-                <Route path="/question-form" element={
-                    <QuestionForm
-                        formData={formData}
-                        setFormData={setFormData}
-                        locations={locations}
-                    />}
-                />
-                <Route path="/itinerary" element={
-                    <Itinerary
-                        formData={formData}
-                        locations={locations}
-                        user={user}
-                    />}
-                />
-                <Route path="/saved-trips" element={
-                    <SavedTrips
-                        user={user}
-                    />}
-                />
+                <Route element={<ProtectedRoutes user={user}/>}>
+                    <Route path="/question-form" element={
+                        <QuestionForm
+                            formData={formData}
+                            setFormData={setFormData}
+                            locations={locations}
+                        />}
+                    />
+                    <Route path="/itinerary" element={
+                        <Itinerary
+                            formData={formData}
+                            locations={locations}
+                            user={user}
+                        />}
+                    />
+                    <Route path="/saved-trips" element={
+                        <SavedTrips
+                            user={user}
+                        />}
+                    />
+                </Route>
             </Routes>
         </>
-    );
-};
+    )
+}
 
 export default App;

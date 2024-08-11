@@ -1,8 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * Home page component. Contains information about the project.
+ */
 const Home = () => {
-    const navigate = useNavigate(); 
+    
+    const navigate = useNavigate()
 
     const handleRedirect = () => {
         navigate("/login");
@@ -46,4 +50,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default Home

@@ -22,7 +22,7 @@ const Login = ({setUser}) => {
     }
 
     const handleLogin = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
         const response = await fetchUserId(formData.username, formData.password)
         if (response) {
             console.log(response)

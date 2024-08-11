@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from "react";
-import "../Styles/itin.css";
+import "../Styles/Itinerary.css";
 import {
     fetchActivitiesByType,
     fetchTransportationByName
@@ -9,23 +9,23 @@ import {getStateFullName} from "../Utils/getStateFullName";
 
 const Itinerary = ({formData, locations, user}) => {
 
-    const [trips, setTrips] = useState([]);
-    const [validActivities, setValidActivities] = useState([]);
-    const [saveButtonEnabled, setSaveButtonEnabled] = useState({});
+    const [trips, setTrips] = useState([])
+    const [validActivities, setValidActivities] = useState([])
+    const [saveButtonEnabled, setSaveButtonEnabled] = useState({})
 
     const validLocations = useMemo(() => locations.filter((location) => {
-        const hasChosenActivity = validActivities.some(activity => activity.location_id === location.location_id);
+        const hasChosenActivity = validActivities.some(activity => activity.location_id === location.location_id)
         return formData.geography.includes(location.geographical_feature) && hasChosenActivity;
-    }), [locations, validActivities, formData.geography]);
+    }), [locations, validActivities, formData.geography])
 
     const uniqueStates = useMemo(() =>
         [...new Set(validLocations.map(location => location.state))], [validLocations])
 
     useEffect(() => {
         if (formData.activities.length > 0) {
-            void fetchActivitiesByType(formData, setValidActivities);
+            void fetchActivitiesByType(formData, setValidActivities)
         }
-    }, [formData]);
+    }, [formData])
 
     const getActivityCountByState = (state) => {
         return validActivities.filter(activity =>
@@ -33,10 +33,10 @@ const Itinerary = ({formData, locations, user}) => {
                 location =>
                     location.location_id === activity.location_id
                     && location.state === state)).length;
-    };
+    }
 
     const getDistanceToState = (state) => {
-        const stateLocations = validLocations.filter(location => location.state === state);
+        const stateLocations = validLocations.filter(location => location.state === state)
         if (stateLocations.length === 0) return Infinity;
         const distances = stateLocations.map(location => calculateDistance(
             formData.location.latitude,
@@ -45,8 +45,8 @@ const Itinerary = ({formData, locations, user}) => {
             location.longitude
         ));
         console.log("distances calculated")
-        return Math.min(...distances);
-    };
+        return Math.min(...distances)
+    }
 
     const topFiveStates = useMemo(() => uniqueStates
         .map(state => ({
@@ -55,7 +55,7 @@ const Itinerary = ({formData, locations, user}) => {
             distance: getDistanceToState(state)
         }))
         .sort((a, b) => b.activityCount - a.activityCount || a.distance - b.distance)
-        .slice(0, 5), [uniqueStates]);
+        .slice(0, 5), [uniqueStates])
 
     // TODO desperately needs a refactor
     useEffect(() => {
@@ -63,10 +63,10 @@ const Itinerary = ({formData, locations, user}) => {
         const fetchData = async () => {
             const newTrips = await Promise.all(topFiveStates.map(async (stateObj) => {
                 const {state, distance} = stateObj;
-                const locations = validLocations.filter(location => location.state === state);
+                const locations = validLocations.filter(location => location.state === state)
                 const activities = validActivities.filter(activity => locations.some(location => location.location_id === activity.location_id));
-                const activityCost = activities.reduce((acc, activity) => acc + parseFloat(activity.cost), 0);
-                const activityCO2 = activities.reduce((acc, activity) => acc + parseFloat(activity.co2_emissions), 0);
+                const activityCost = activities.reduce((acc, activity) => acc + parseFloat(activity.cost), 0)
+                const activityCO2 = activities.reduce((acc, activity) => acc + parseFloat(activity.co2_emissions), 0)
                 const transportation = await (distance > 300 ? fetchTransportationByName("Airplane") : fetchTransportationByName("Car Rental"));
                 const transportationCost = distance * transportation.cost_per_mi * 2;
                 const transportationCO2 = distance * transportation.emissions_per_mi * 2;
@@ -77,7 +77,7 @@ const Itinerary = ({formData, locations, user}) => {
                     user_id: user.id,
                     total_cost: totalCost,
                     total_emissions: totalCO2
-                };
+                }
 
                 const tripResult = await fetch("/api/add-trip", {
                     method: "POST",
@@ -85,9 +85,9 @@ const Itinerary = ({formData, locations, user}) => {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify(tripData)
-                });
+                })
 
-                const trip = await tripResult.json();
+                const trip = await tripResult.json()
 
                 await fetch("/api/add-trip-activities", {
                     method: "POST",
@@ -97,7 +97,7 @@ const Itinerary = ({formData, locations, user}) => {
                     body: JSON.stringify({
                         trip_id: trip.trip_id, activities
                     })
-                });
+                })
 
                 await fetch("/api/add-trip-locations", {
                     method: "POST",
@@ -105,7 +105,7 @@ const Itinerary = ({formData, locations, user}) => {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({trip_id: trip.trip_id, locations})
-                });
+                })
 
                 await fetch("/api/add-trip-transportation", {
                     method: "POST",
@@ -119,7 +119,7 @@ const Itinerary = ({formData, locations, user}) => {
                         total_cost: transportationCost,
                         total_emissions: transportationCO2
                     })
-                });
+                })
 
                 return {
                     ...tripData,
@@ -129,7 +129,7 @@ const Itinerary = ({formData, locations, user}) => {
                     activities,
                     transportation,
                     distance
-                };
+                }
             }));
 
             setTrips(prevTrips => {
@@ -137,18 +137,18 @@ const Itinerary = ({formData, locations, user}) => {
                     return newTrips;
                 }
                 return prevTrips;
-            });
-        };
+            })
+        }
 
-        void fetchData();
-    }, [topFiveStates, validActivities, validLocations]);
+        void fetchData()
+    }, [topFiveStates, validActivities, validLocations])
 
     const saveTrip = async (trip) => {
         const saveData = {
             user_id: user.id,
             trip_id: trip.trip_id,
             saved_at: new Date().toISOString().slice(0, 19).replace("T", " ")
-        };
+        }
 
         setSaveButtonEnabled(prevState => ({...prevState, [trip.trip_id]: true}));
 
@@ -159,19 +159,19 @@ const Itinerary = ({formData, locations, user}) => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(saveData)
-            });
+            })
 
             if (response.ok) {
-                console.log("Trip saved successfully");
+                console.log("Trip saved successfully")
             } else {
-                console.error("Error saving trip");
+                console.error("Error saving trip")
                 setSaveButtonEnabled(prevState => ({...prevState, [trip.trip_id]: false}));
             }
         } catch (error) {
-            console.error("Error saving trip:", error);
+            console.error("Error saving trip:", error)
             setSaveButtonEnabled(prevState => ({...prevState, [trip.trip_id]: false}));
         }
-    };
+    }
 
     const ItineraryHeader = ({formData}) => (
         <div className={"itinerary-header"}>
@@ -180,7 +180,7 @@ const Itinerary = ({formData, locations, user}) => {
             <h2>Your Location</h2>
             <p><b></b>{formData.location.city}, {formData.location.state}</p>
         </div>
-    );
+    )
 
     const TripHeader = ({index, state, trip}) => (
         <div className="trip-header">
@@ -193,7 +193,7 @@ const Itinerary = ({formData, locations, user}) => {
                 ><b>Save Trip</b>
                 </button>
         </div>
-    );
+    )
 
     const ItineraryContainer = ({trip}) => {
 
@@ -227,7 +227,7 @@ const Itinerary = ({formData, locations, user}) => {
             </ul>
             <br/>
         </div>
-    );
+    )
 
     return (
         <div>
@@ -244,7 +244,7 @@ const Itinerary = ({formData, locations, user}) => {
 
             </div>
         </div>
-    );
+    )
 }
 
 export default Itinerary;

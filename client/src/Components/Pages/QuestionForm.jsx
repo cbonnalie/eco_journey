@@ -11,31 +11,29 @@ const maxIndex = 2;
  *
  * @param formData - the form data
  * @param setFormData - the function to set the form data
- * @param locations
- * @param setLocations
- * @returns {Element} - the form
+ * @param locations - the locations to choose from
  */
 const QuestionForm = ({formData, setFormData, locations}) => {
 
     // State for current index
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0)
     // The different activity types to choose from
-    const [activityTypes, setActivityTypes] = useState([]);
+    const [activityTypes, setActivityTypes] = useState([])
     // The different geography types to choose from
-    const [geographyTypes, setGeographyTypes] = useState([]);
+    const [geographyTypes, setGeographyTypes] = useState([])
 
     // updates the data of single input forms
     const handleInputChange = (e) => {
         const {name, value} = e.target;
 
         if (name === "location") {
-            const [city, state, latitude, longitude] = value.split(",");
+            const [city, state, latitude, longitude] = value.split(",")
             setFormData({...formData, location: {city, state, latitude, longitude}})
             return
         }
 
-        setFormData({...formData, [name]: value});
-    };
+        setFormData({...formData, [name]: value})
+    }
 
     // updates the data of checkbox forms
     const handleCheckboxChange = (e, value, name) => {
@@ -49,33 +47,33 @@ const QuestionForm = ({formData, setFormData, locations}) => {
     // handles clicking the next button
     const handleNext = () => {
         setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, maxIndex));
-    };
+    }
 
     // handles clicking the previous button
     const handlePrev = () => {
         setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0));
-    };
+    }
 
     /*
      * If the form is valid, redirect to the itinerary page.
      * Otherwise, alert the user to fill out all fields.
      */
     const handleSubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault()
         if (isFormValid()) {
             window.location.href = "/itinerary";
         } else {
             alert("Please fill out all fields")
             console.log("form submitted: ", formData)
         }
-    };
+    }
 
     
     const isFormValid = () => {
         return formData.location.city
             && formData.activities.length > 0
             && formData.geography.length > 0;
-    };
+    }
 
     /* Render Functions */
     
@@ -95,7 +93,7 @@ const QuestionForm = ({formData, setFormData, locations}) => {
                 </div>
             ))}
         </div>
-    );
+    )
     
     const renderLocationForm = () => (
         <div className={"option"}>
@@ -111,7 +109,7 @@ const QuestionForm = ({formData, setFormData, locations}) => {
                 ))}
             </select>
         </div>
-    );
+    )
 
     const renderGeographyForm = () => (
         <div className={"option"}>
@@ -141,7 +139,7 @@ const QuestionForm = ({formData, setFormData, locations}) => {
                 <button type={"submit"} id={"submit"}>Submit</button>
             )}
         </div>
-    ), [currentIndex]);
+    ), [currentIndex])
 
     useEffect(() => {
         console.log("resetting form data...")
@@ -164,7 +162,7 @@ const QuestionForm = ({formData, setFormData, locations}) => {
     useEffect(() => {
         void fetchActivityTypes(setActivityTypes)
         void fetchGeographyTypes(setGeographyTypes)
-    }, []);
+    }, [])
 
 
     /*
@@ -172,18 +170,18 @@ const QuestionForm = ({formData, setFormData, locations}) => {
      * in terms of showing the correct form data and hiding the correct buttons.
      */
     useEffect(() => {
-        const options = $(".option");
-        options.hide().eq(0).show();
+        const options = $(".option")
+        options.hide().eq(0).show()
 
         // Update buttons based on state of the form
         const updateButtonStates = () => {
-            $("#prev").prop("disabled", currentIndex === 0);
-            renderButtons();
-        };
+            $("#prev").prop("disabled", currentIndex === 0)
+            renderButtons()
+        }
 
         // Show buttons initially
-        updateButtonStates();
-    }, [currentIndex, renderButtons]); // Re-run this effect when currentIndex changes
+        updateButtonStates()
+    }, [currentIndex, renderButtons]) // Re-run this effect when currentIndex changes
 
     return (
         <div>
@@ -196,8 +194,8 @@ const QuestionForm = ({formData, setFormData, locations}) => {
                 </form>
             </div>
         </div>
-    );
-};
+    )
+}
 
 
 export default QuestionForm;

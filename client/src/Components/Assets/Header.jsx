@@ -1,7 +1,14 @@
 import React, {useState} from "react";
-import Navigation from "./Navigation"; // Import Navigation component
-
+import Navigation from "./Navigation";
+import {useNavigate} from "react-router-dom";
+/**
+ * Header component to display the logo, navigation bar, and user status.
+ * @param user - the current user
+ * @param setUser - the function to set the current user
+ */
 const Header = ({user, setUser}) => {
+
+    const navigate = useNavigate();
     
     const [dropdownVisible, setDropdownVisible] = useState(false);
     
@@ -12,7 +19,7 @@ const Header = ({user, setUser}) => {
     const handleLogout = () => {
         setUser({username: "", id: ""})
         setDropdownVisible(false)
-        window.location.href = "/login"
+        navigate("/login")
     }
     
     return (

@@ -1,22 +1,21 @@
 import {useState, useEffect} from "react";
-import Header from "../Assets/Header";
 import {getStateFullName} from "../Utils/getStateFullName";
 import {timeDateFormatter} from "../Utils/timeDateFormatter";
 import {fetchActivitiesByTripId, fetchLocationsByTripId, fetchTransportationByTripId} from "../Utils/fetchers";
-import "../Styles/itin.css";
+import "../Styles/Itinerary.css";
 
 const SavedTrips = ({user}) => {
-    const [savedTrips, setSavedTrips] = useState([]);
-    const [activities, setActivities] = useState([]);
-    const [locations, setLocations] = useState([]);
-    const [transportation, setTransportation] = useState([]);
+    const [savedTrips, setSavedTrips] = useState([])
+    const [activities, setActivities] = useState([])
+    const [locations, setLocations] = useState([])
+    const [transportation, setTransportation] = useState([])
 
     useEffect(() => {
         const fetchSavedTrips = async () => {
             try {
                 const user_id = user.id;
-                const response = await fetch(`/api/saved-trips/${user_id}`);
-                const data = await response.json();
+                const response = await fetch(`/api/saved-trips/${user_id}`)
+                const data = await response.json()
 
                 const formattedData = data.map(({trip_id, total_cost, total_emissions, saved_at}) => ({
                     trip_id,
@@ -25,47 +24,47 @@ const SavedTrips = ({user}) => {
                     saved_at
                 }));
 
-                setSavedTrips(formattedData);
+                setSavedTrips(formattedData)
 
                 for (const trip of formattedData) {
                     const [activitiesData, locationsData, transportationData] = await Promise.all([
                         fetchActivitiesByTripId(trip.trip_id),
                         fetchLocationsByTripId(trip.trip_id),
                         fetchTransportationByTripId(trip.trip_id)
-                    ]);
+                    ])
 
-                    setActivities(prev => [...prev, {trip_id: trip.trip_id, activities: activitiesData}]);
-                    setLocations(prev => [...prev, {trip_id: trip.trip_id, locations: locationsData}]);
-                    setTransportation(prev => [...prev, {trip_id: trip.trip_id, transportation: transportationData}]);
+                    setActivities(prev => [...prev, {trip_id: trip.trip_id, activities: activitiesData}])
+                    setLocations(prev => [...prev, {trip_id: trip.trip_id, locations: locationsData}])
+                    setTransportation(prev => [...prev, {trip_id: trip.trip_id, transportation: transportationData}])
 
                 }
             } catch (error) {
-                console.error("Error fetching saved trips:", error);
+                console.error("Error fetching saved trips:", error)
             }
-        };
-        void fetchSavedTrips();
-    }, []);
+        }
+        void fetchSavedTrips()
+    }, [])
 
     const SavedTripHeader = () => (
         <div className={"itinerary-header"}>
             <h1>{user.username}'s Saved Trips</h1>
         </div>
-    );
+    )
 
     const TripHeader = ({trip}) => {
         const tripLocations = locations.find(l => l.trip_id === trip.trip_id)?.locations || [];
         // seems to always pull the correct state,
         // but breaks if the ternary operator is removed!?
         const state = tripLocations.length > 0 ? tripLocations[0].state : "Unknown State";
-        const stateFullName = getStateFullName(state);
+        const stateFullName = getStateFullName(state)
 
         return (
             <div className="trip-header">
                 <h1><b>{stateFullName}</b></h1>
                 <p>Saved at: {timeDateFormatter(trip.saved_at)}</p>
             </div>
-        );
-    };
+        )
+    }
 
     const ItineraryContainer = ({trip}) => {
         /* using optional chaining (?.) here since a user could
@@ -93,8 +92,8 @@ const SavedTrips = ({user}) => {
                     <ActivityList key={index} location={location} chosenActivities={tripActivities}/>
                 ))}
             </div>
-        );
-    };
+        )
+    }
 
     const ActivityList = ({location, chosenActivities}) => (
         <div>
@@ -105,7 +104,7 @@ const SavedTrips = ({user}) => {
             </ul>
             <br/>
         </div>
-    );
+    )
 
     return (
         <div>
@@ -119,7 +118,7 @@ const SavedTrips = ({user}) => {
                 ))}
             </div>
         </div>
-    );
-};
+    )
+}
 
 export default SavedTrips;

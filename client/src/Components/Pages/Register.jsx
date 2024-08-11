@@ -5,24 +5,24 @@ import {fetchUsernameEmailTaken} from "../Utils/fetchers";
 
 const Register = () => {
 
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [email, setEmail] = useState("");
-    const [error, setError] = useState("");
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const [email, setEmail] = useState("")
+    const [error, setError] = useState("")
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
 
         if (password !== confirmPassword) {
-            setError("Passwords do not match.");
+            setError("Passwords do not match.")
             return;
         }
         
-        const taken = await fetchUsernameEmailTaken(username, email);
+        const taken = await fetchUsernameEmailTaken(username, email)
         
         if (taken) {
-            setError("Username or email already taken.");
+            setError("Username or email already taken.")
             return;
         }
         
@@ -30,7 +30,7 @@ const Register = () => {
             username,
             password,
             email
-        };
+        }
 
         try {
             const response = await fetch("http://localhost:5000/api/register", {
@@ -39,21 +39,21 @@ const Register = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(userData),
-            });
+            })
 
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error response:", errorData);
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorData = await response.json()
+                console.error("Error response:", errorData)
+                throw new Error(`HTTP error! status: ${response.status}`)
             }
 
-            console.log("User registered successfully");
+            console.log("User registered successfully")
             window.location.href = "/login"; // Redirect after successful registration
         } catch (error) {
-            console.error("Fetch error:", error);
-            setError("Network error. Please try again.");
+            console.error("Fetch error:", error)
+            setError("Network error. Please try again.")
         }
-    };
+    }
 
     return (
         <div className={"wrapper"}>
@@ -104,7 +104,7 @@ const Register = () => {
                 <button type={"submit"}>Submit</button>
             </form>
         </div>
-    );
-};
+    )
+}
 
 export default Register;

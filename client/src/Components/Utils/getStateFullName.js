@@ -49,8 +49,8 @@ const stateAbbreviations = {
     WV: "West Virginia",
     WI: "Wisconsin",
     WY: "Wyoming"
-};
+}
 
 export function getStateFullName(abbreviation) {
-    return stateAbbreviations[abbreviation.toUpperCase()];
+    return stateAbbreviations[abbreviation.toUpperCase()]
 }
