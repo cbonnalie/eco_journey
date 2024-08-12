@@ -39,6 +39,9 @@ export async function getLocations() {
     return rows
 }
 
+/**
+ * Get all activity types
+ */
 export async function getAllActivityTypes() {
     const [rows] = await pool.query(`
     SELECT DISTINCT type
@@ -47,6 +50,9 @@ export async function getAllActivityTypes() {
     return rows
 }
 
+/**
+ * Get all geography types
+ */
 export async function getGeographyTypes() {
     const [rows] = await pool.query(`
     SELECT DISTINCT geographical_feature
@@ -55,6 +61,9 @@ export async function getGeographyTypes() {
     return rows
 }
 
+/**
+ * Get data about a transportation type by name
+ */
 export async function getTransportationByName(name) {
     const [rows] = await pool.query(`
     SELECT *
@@ -66,7 +75,6 @@ export async function getTransportationByName(name) {
 
 /**
  * Add a new user to the database
- * @param {Object} userData - The user data object
  */
 export async function addUser(userData) {
     const {username, password, email} = userData;
@@ -86,6 +94,9 @@ export async function addUser(userData) {
     return result;
 }
 
+/**
+ * Add a trip to the trips table
+ */
 export async function addTrip(tripData) {
     try {
         const {user_id, total_cost, total_emissions} = tripData;
@@ -101,6 +112,9 @@ export async function addTrip(tripData) {
     }
 }
 
+/**
+ * Add activities to the trip_activities table
+ */
 export async function addTripActivities(trip_id, activities) {
     try {
         const values = activities.map(activity => [trip_id, activity.activity_id]);
@@ -115,6 +129,9 @@ export async function addTripActivities(trip_id, activities) {
     }
 }
 
+/**
+ * Add locations to the trip_locations table
+ */
 export async function addTripLocations(trip_id, locations) {
     try {
         const values = locations.map(location => [trip_id, location.location_id]);
@@ -129,6 +146,9 @@ export async function addTripLocations(trip_id, locations) {
     }
 }
 
+/**
+ * Add transportation to the trip_transportation table
+ */
 export async function addTripTransportation(trip_id, transportation) {
     try {
         const {transport_id, distance_mi, total_cost, total_emissions} = transportation;
@@ -143,6 +163,9 @@ export async function addTripTransportation(trip_id, transportation) {
     }
 }
 
+/**
+ * Save a trip to the saved_trips table
+ */
 export async function saveTrip(saveData) {
     try {
         const {user_id, trip_id, saved_at} = saveData;
@@ -158,6 +181,9 @@ export async function saveTrip(saveData) {
     }
 }
 
+/**
+ * Get all saved trips belonging to a specific user
+ */
 export async function getSavedTrips(user_id) {
     const [rows] = await pool.query(`
     SELECT trips.*, saved_at
@@ -169,6 +195,9 @@ export async function getSavedTrips(user_id) {
     return rows;
 }
 
+/**
+ * Get all activities for a specific trip
+ */
 export async function getActivitiesByTripId(trip_id) {
     const [rows] = await pool.query(`
     SELECT activities.*
@@ -179,6 +208,9 @@ export async function getActivitiesByTripId(trip_id) {
     return rows;
 }
 
+/**
+ * Get all locations for a specific trip
+ */
 export async function getLocationsByTripId(trip_id) {
     const [rows] = await pool.query(`
     SELECT locations.*
@@ -189,6 +221,9 @@ export async function getLocationsByTripId(trip_id) {
     return rows;
 }
 
+/**
+ * Get all transportation for a specific trip
+ */
 export async function getTransportationByTripId(trip_id) {
     const [rows] = await pool.query(`
     SELECT transportation_types.*
@@ -199,6 +234,9 @@ export async function getTransportationByTripId(trip_id) {
     return rows;
 }
 
+/**
+ * Check if a username or email is already taken
+ */
 export async function usernameEmailTaken(username, email) {
     const [[rows]] = await pool.query(`
         SELECT COUNT(*) as count
@@ -208,6 +246,9 @@ export async function usernameEmailTaken(username, email) {
     return rows.count > 0;
 }
 
+/**
+ * Check if username exists, then check that password matches
+ */
 export async function authenticateUser(username, password) {
     const [[rows]] = await pool.query(`
         SELECT *
