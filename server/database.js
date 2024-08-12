@@ -12,15 +12,6 @@ const pool = mysql.createPool({
 }).promise()
 
 /**
- * Get all users
- * TODO: delete
- */
-export async function getUsers() {
-    const [rows] = await pool.query('SELECT * FROM users')
-    return rows
-}
-
-/**
  * Get activities by types chosen by the user
  * @param types - the types of activities chosen by the user
  * @returns {Promise<*>} - the activities that match the types

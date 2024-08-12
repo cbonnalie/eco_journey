@@ -7,6 +7,9 @@ import {
 import {calculateDistance} from "../Utils/calculateDistance";
 import {getStateFullName} from "../Utils/getStateFullName";
 
+/**
+ * Itinerary component. Contains the logic to generate a list of trips based on the user's preferences.
+ */
 const Itinerary = ({formData, locations, user}) => {
 
     const [trips, setTrips] = useState([])
@@ -56,18 +59,32 @@ const Itinerary = ({formData, locations, user}) => {
         }))
         .sort((a, b) => b.activityCount - a.activityCount || a.distance - b.distance)
         .slice(0, 5), [uniqueStates])
-
-    // TODO desperately needs a refactor
+    
+    // fetch all data needed for the top 5 states in order to store it in the database
     useEffect(() => {
-
         const fetchData = async () => {
             const newTrips = await Promise.all(topFiveStates.map(async (stateObj) => {
                 const {state, distance} = stateObj;
-                const locations = validLocations.filter(location => location.state === state)
-                const activities = validActivities.filter(activity => locations.some(location => location.location_id === activity.location_id));
-                const activityCost = activities.reduce((acc, activity) => acc + parseFloat(activity.cost), 0)
-                const activityCO2 = activities.reduce((acc, activity) => acc + parseFloat(activity.co2_emissions), 0)
-                const transportation = await (distance > 300 ? fetchTransportationByName("Airplane") : fetchTransportationByName("Car Rental"));
+                
+                const locations = validLocations.filter(
+                    location => location.state === state
+                )
+                
+                const activities = validActivities.filter(
+                    activity => locations.some(
+                        location => location.location_id === activity.location_id
+                    ))
+                
+                const activityCost = activities.reduce(
+                    (acc, activity) => acc + parseFloat(activity.cost), 0)
+                
+                const activityCO2 = activities.reduce(
+                    (acc, activity) => acc + parseFloat(activity.co2_emissions), 0)
+                
+                const transportation = await (distance > 300 
+                    ? fetchTransportationByName("Airplane") 
+                    : fetchTransportationByName("Car Rental"));
+                
                 const transportationCost = distance * transportation.cost_per_mi * 2;
                 const transportationCO2 = distance * transportation.emissions_per_mi * 2;
                 const totalCost = transportationCost + activityCost;

@@ -2,6 +2,9 @@ import React from "react";
 import {FaUser} from "react-icons/fa";
 import "../Styles/Form.css";
 
+/**
+ * Forgot Password page component. Contains a form to reset the user's password.
+ */
 const ForgotPassword = () => {
     return (
         <div className={"wrapper"}>

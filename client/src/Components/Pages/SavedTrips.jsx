@@ -100,7 +100,7 @@ const SavedTrips = ({user}) => {
             <h3><b>{location.city}</b></h3>
             <ul>
                 {chosenActivities.filter(a => a.location_id === location.location_id)
-                    .map(a => <li key={a.activity_id}>{a.name} (ID: {a.activity_id})</li>)}
+                    .map(a => <li key={a.activity_id}>{a.name} (${a.cost})</li>)}
             </ul>
             <br/>
         </div>
