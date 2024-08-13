@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {FaLock, FaUser} from "react-icons/fa";
 import "../Styles/Form.css";
-import {Navigate} from "react-router-dom";
-import {fetchUserId} from "../Utils/fetchers";
+import {fetchUserId} from "../Utils/DatabaseFunctions";
 
 const Login = ({setUser}) => {
     
@@ -40,9 +39,6 @@ const Login = ({setUser}) => {
     
     return (
         <div className="center-container">
-            {/*<div className={"logo-container"}>
-                <img src="/ej_logo.png" alt={"Eco Journey Logo"} className={"logo"}/>
-            </div>*/}
             <div className={"wrapper"}>
                 <form onSubmit={handleLogin}>
                     <h1>Login</h1>

@@ -1,11 +1,8 @@
 import React, {useEffect, useMemo, useState} from "react";
+import {fetchActivitiesByType, fetchTransportationByName} from "../Utils/DatabaseFunctions";
+import {calculateDistance} from "../Utils/CalculateDistance";
+import {getStateFullName} from "../Utils/GetStateFullName";
 import "../Styles/Itinerary.css";
-import {
-    fetchActivitiesByType,
-    fetchTransportationByName
-} from "../Utils/fetchers";
-import {calculateDistance} from "../Utils/calculateDistance";
-import {getStateFullName} from "../Utils/getStateFullName";
 
 /**
  * Itinerary component. Contains the logic to generate a list of trips based on the user's preferences.
@@ -158,7 +155,7 @@ const Itinerary = ({formData, locations, user}) => {
         }
 
         void fetchData()
-    }, [topFiveStates, validActivities, validLocations])
+    }, [topFiveStates, validActivities, validLocations, user.id])
 
     const saveTrip = async (trip) => {
         const saveData = {

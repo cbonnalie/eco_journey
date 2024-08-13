@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useState} from "react";
-import {fetchActivityTypes, fetchGeographyTypes} from "../Utils/fetchers"
+import {fetchActivityTypes, fetchGeographyTypes} from "../Utils/DatabaseFunctions"
 import $ from "jquery";
 /**
  * The maximum index of the form.

@@ -1,4 +1,4 @@
-export function timeDateFormatter(theDate) {
+export function dateTimeFormatter(theDate) {
     const date = theDate.substring(0, 10)
     const time = theDate.substring(11, 16)
     

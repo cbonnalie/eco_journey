@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import "../Styles/Form.css";
 import { FaUser, FaLock } from "react-icons/fa";
-import {fetchUsernameEmailTaken} from "../Utils/fetchers";
+import {fetchUsernameEmailTaken} from "../Utils/DatabaseFunctions";
 
 const Register = () => {
 

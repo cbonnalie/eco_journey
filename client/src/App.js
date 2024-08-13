@@ -13,7 +13,7 @@ import SavedTrips from "./Components/Pages/SavedTrips"
 import About from "./Components/Pages/About"
 import Header from "./Components/Assets/Header"
 import ProtectedRoutes from "./Components/Utils/ProtectedRoutes"
-import {fetchLocations} from "./Components/Utils/fetchers"
+import {fetchLocations} from "./Components/Utils/DatabaseFunctions"
 
 /**
  * The main component for the application. It is responsible for rendering

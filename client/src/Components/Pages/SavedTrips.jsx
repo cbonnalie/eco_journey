@@ -1,7 +1,7 @@
 import {useState, useEffect} from "react";
-import {getStateFullName} from "../Utils/getStateFullName";
-import {timeDateFormatter} from "../Utils/timeDateFormatter";
-import {fetchActivitiesByTripId, fetchLocationsByTripId, fetchTransportationByTripId} from "../Utils/fetchers";
+import {getStateFullName} from "../Utils/GetStateFullName";
+import {dateTimeFormatter} from "../Utils/DateTimeFormatter";
+import {fetchActivitiesByTripId, fetchLocationsByTripId, fetchTransportationByTripId} from "../Utils/DatabaseFunctions";
 import "../Styles/Itinerary.css";
 
 const SavedTrips = ({user}) => {
@@ -43,7 +43,7 @@ const SavedTrips = ({user}) => {
             }
         }
         void fetchSavedTrips()
-    }, [])
+    }, [user.id])
 
     const SavedTripHeader = () => (
         <div className={"itinerary-header"}>
@@ -61,7 +61,7 @@ const SavedTrips = ({user}) => {
         return (
             <div className="trip-header">
                 <h1><b>{stateFullName}</b></h1>
-                <p>Saved at: {timeDateFormatter(trip.saved_at)}</p>
+                <p>Saved at: {dateTimeFormatter(trip.saved_at)}</p>
             </div>
         )
     }
