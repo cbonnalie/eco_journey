@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 /**
  * About page component. Contains information about the project and the creators.
