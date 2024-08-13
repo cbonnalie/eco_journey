@@ -1,6 +1,6 @@
-import React, {useEffect, useMemo, useState} from "react";
-import {fetchActivitiesByType, fetchTransportationByName} from "../Utils/DatabaseFunctions";
-import {calculateDistance} from "../Utils/CalculateDistance";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
+import * as dbFunc from "../Utils/DatabaseFunctions";
+import {calculateDistance} from "../Utils/Calculators";
 import {getStateFullName} from "../Utils/GetStateFullName";
 import "../Styles/Itinerary.css";
 
@@ -8,183 +8,99 @@ import "../Styles/Itinerary.css";
  * Itinerary component. Contains the logic to generate a list of trips based on the user's preferences.
  */
 const Itinerary = ({formData, locations, user}) => {
-
     const [trips, setTrips] = useState([])
     const [validActivities, setValidActivities] = useState([])
     const [saveButtonEnabled, setSaveButtonEnabled] = useState({})
-
-    const validLocations = useMemo(() => locations.filter((location) => {
-        const hasChosenActivity = validActivities.some(activity => activity.location_id === location.location_id)
-        return formData.geography.includes(location.geographical_feature) && hasChosenActivity;
-    }), [locations, validActivities, formData.geography])
-
+    
+    const validLocations = useMemo(() =>
+        locations.filter(location =>
+            formData.geography.includes(location.geographical_feature) &&
+            validActivities.some(activity => activity.location_id === location.location_id)
+        ), [locations, validActivities, formData.geography]
+    )
+    
     const uniqueStates = useMemo(() =>
-        [...new Set(validLocations.map(location => location.state))], [validLocations])
+        [...new Set(validLocations.map(location => location.state))], 
+        [validLocations]
+    )
 
     useEffect(() => {
         if (formData.activities.length > 0) {
-            void fetchActivitiesByType(formData, setValidActivities)
+            void dbFunc.fetchActivitiesByType(formData, setValidActivities)
         }
     }, [formData])
 
-    const getActivityCountByState = (state) => {
-        return validActivities.filter(activity =>
-            validLocations.some(
-                location =>
-                    location.location_id === activity.location_id
-                    && location.state === state)).length;
-    }
-
-    const getDistanceToState = (state) => {
+    const getActivityCountByState = useCallback(state =>
+            validActivities.filter(activity =>
+                validLocations.some(
+                    location => location.location_id === activity.location_id && location.state === state
+                )
+            ).length,
+        [validActivities, validLocations]
+    )
+    
+    const getDistanceToState = useCallback(state => {
         const stateLocations = validLocations.filter(location => location.state === state)
-        if (stateLocations.length === 0) return Infinity;
-        const distances = stateLocations.map(location => calculateDistance(
-            formData.location.latitude,
-            formData.location.longitude,
-            location.latitude,
-            location.longitude
-        ));
+        if (stateLocations.length === 0) return Infinity
+
+        const distances = stateLocations.map(location =>
+            calculateDistance(
+                formData.location.latitude,
+                formData.location.longitude,
+                location.latitude,
+                location.longitude
+            )
+        )
         console.log("distances calculated")
         return Math.min(...distances)
-    }
+    }, [validLocations, formData.location])
 
-    const topFiveStates = useMemo(() => uniqueStates
-        .map(state => ({
+    const topFiveStates = useMemo(() => 
+        uniqueStates.map(state => ({
             state,
             activityCount: getActivityCountByState(state),
             distance: getDistanceToState(state)
         }))
         .sort((a, b) => b.activityCount - a.activityCount || a.distance - b.distance)
-        .slice(0, 5), [uniqueStates])
+        .slice(0, 5), [uniqueStates]
+    )
     
     // fetch all data needed for the top 5 states in order to store it in the database
     useEffect(() => {
         const fetchData = async () => {
             const newTrips = await Promise.all(topFiveStates.map(async (stateObj) => {
-                const {state, distance} = stateObj;
-                
+                const { state, distance } = stateObj;
+
                 const locations = validLocations.filter(
                     location => location.state === state
                 )
-                
+
                 const activities = validActivities.filter(
                     activity => locations.some(
                         location => location.location_id === activity.location_id
-                    ))
-                
-                const activityCost = activities.reduce(
-                    (acc, activity) => acc + parseFloat(activity.cost), 0)
-                
-                const activityCO2 = activities.reduce(
-                    (acc, activity) => acc + parseFloat(activity.co2_emissions), 0)
-                
-                const transportation = await (distance > 300 
-                    ? fetchTransportationByName("Airplane") 
-                    : fetchTransportationByName("Car Rental"));
-                
-                const transportationCost = distance * transportation.cost_per_mi * 2;
-                const transportationCO2 = distance * transportation.emissions_per_mi * 2;
-                const totalCost = transportationCost + activityCost;
-                const totalCO2 = transportationCO2 + activityCO2;
+                    )
+                )
 
-                const tripData = {
-                    user_id: user.id,
-                    total_cost: totalCost,
-                    total_emissions: totalCO2
-                }
+                const transportation = await dbFunc.fetchTransportationByDistance(distance)
 
-                const tripResult = await fetch("/api/add-trip", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(tripData)
-                })
-
-                const trip = await tripResult.json()
-
-                await fetch("/api/add-trip-activities", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        trip_id: trip.trip_id, activities
-                    })
-                })
-
-                await fetch("/api/add-trip-locations", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({trip_id: trip.trip_id, locations})
-                })
-
-                await fetch("/api/add-trip-transportation", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        trip_id: trip.trip_id,
-                        transport_id: transportation.transport_id,
-                        distance_mi: distance,
-                        total_cost: transportationCost,
-                        total_emissions: transportationCO2
-                    })
-                })
-
-                return {
-                    ...tripData,
-                    trip_id: trip.trip_id,
-                    state,
-                    locations,
-                    activities,
-                    transportation,
-                    distance
-                }
-            }));
+                return await dbFunc.addTripData(user, state, distance, transportation, activities, locations)
+            }))
 
             setTrips(prevTrips => {
                 if (JSON.stringify(prevTrips) !== JSON.stringify(newTrips)) {
-                    return newTrips;
+                    return newTrips
                 }
-                return prevTrips;
+                return prevTrips
             })
         }
 
         void fetchData()
-    }, [topFiveStates, validActivities, validLocations, user.id])
+    }, [topFiveStates, validActivities, validLocations, user])
 
     const saveTrip = async (trip) => {
-        const saveData = {
-            user_id: user.id,
-            trip_id: trip.trip_id,
-            saved_at: new Date().toISOString().slice(0, 19).replace("T", " ")
-        }
-
-        setSaveButtonEnabled(prevState => ({...prevState, [trip.trip_id]: true}));
-
-        try {
-            const response = await fetch("/api/save-trip", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(saveData)
-            })
-
-            if (response.ok) {
-                console.log("Trip saved successfully")
-            } else {
-                console.error("Error saving trip")
-                setSaveButtonEnabled(prevState => ({...prevState, [trip.trip_id]: false}));
-            }
-        } catch (error) {
-            console.error("Error saving trip:", error)
-            setSaveButtonEnabled(prevState => ({...prevState, [trip.trip_id]: false}));
-        }
+        setSaveButtonEnabled(prevState => ({...prevState, [trip.trip_id]: true}))
+        const success = await dbFunc.saveTripData(user.id, trip.trip_id)
+        if (!success) setSaveButtonEnabled(prevState => ({...prevState, [trip.trip_id]: false}))
     }
 
     const ItineraryHeader = ({formData}) => (
@@ -247,9 +163,7 @@ const Itinerary = ({formData, locations, user}) => {
     return (
         <div>
             <ItineraryHeader formData={formData}/>
-
             <div className={"itinerary-wrapper"}>
-
                 {trips.map((trip, index) => (
                     <div key={index}>
                         <TripHeader index={index} state={trip.state} trip={trip}/>

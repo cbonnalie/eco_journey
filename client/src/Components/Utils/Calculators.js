@@ -38,3 +38,13 @@ export function calculateDistance(latStart, lonStart, latEnd, lonEnd) {
     const earthRadius = 3958.8
     return earthRadius * centralAngle
 }
+
+export function calculateCosts(activities, transportation, distance) {
+    const activityCost = activities.reduce((acc, activity) => acc + parseFloat(activity.cost), 0)
+    const activityCO2 = activities.reduce((acc, activity) => acc + parseFloat(activity.co2_emissions), 0)
+    const transportationCost = distance * transportation.cost_per_mi * 2
+    const transportationCO2 = distance * transportation.emissions_per_mi * 2
+    const totalCost = transportationCost + activityCost
+    const totalCO2 = transportationCO2 + activityCO2
+    return {transportationCost, transportationCO2, totalCost, totalCO2}
+}
