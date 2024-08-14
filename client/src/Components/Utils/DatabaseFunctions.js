@@ -135,14 +135,14 @@ export const fetchTransportationByDistance = async (distance) => {
     }
 }
 
-export const addTripData = async (UserActivation, state, distance, transportation, activities, locations) => {
+export const addTripData = async (user, state, distance, transportation, activities, locations, geography) => {
     try {
         // calculate costs and emissions for the trip
         const {transportationCost, transportationCO2, totalCost, totalCO2} 
             = calculateCosts(activities, transportation, distance)
         // bundle all trip data together to send to the database
         const tripData = {
-            user_id: UserActivation.id,
+            user_id: user.id,
             total_cost: totalCost,
             total_emissions: totalCO2
         }
@@ -162,7 +162,8 @@ export const addTripData = async (UserActivation, state, distance, transportatio
             locations,
             activities,
             transportation,
-            distance
+            distance,
+            geography
         }
     } catch (error) {
         console.error("Error adding trip data:", error)

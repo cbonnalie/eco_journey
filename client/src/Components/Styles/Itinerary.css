@@ -5,6 +5,11 @@
     font-size: 28px;
 }
 
+.trip-header .state-geography {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 20px;
+}
+
 .trip-header, .itinerary-header {
     background-color: rgba(0, 0, 0, 0.5);
     border: 2px solid rgba(255, 255, 255, .2);
@@ -67,6 +72,14 @@
 .itinerary-container a {
     color: white;
     text-decoration: none;
+}
+
+.itinerary-container .activity-info {
+    color: rgba(255, 255, 255, 0.7);
+    position: absolute;
+    font-size: 20px;
+    right: 3%;
+    margin-top: .3em;
 }
 
 .itinerary-container a:hover {

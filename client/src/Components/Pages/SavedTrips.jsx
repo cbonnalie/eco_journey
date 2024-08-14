@@ -58,9 +58,11 @@ const SavedTrips = ({user}) => {
         const state = tripLocations.length > 0 ? tripLocations[0].state : "Unknown State";
         const stateFullName = getStateFullName(state)
 
+        const geography = tripLocations.length > 0 ? tripLocations[0].geographical_feature : "Unknown Geography";
+        
         return (
             <div className="trip-header">
-                <h1><b>{stateFullName}</b></h1>
+                <h1><b>{stateFullName}</b><p className={"state-geography"}>because you chose {geography}</p></h1>
                 <p>Saved at: {dateTimeFormatter(trip.saved_at)}</p>
             </div>
         )
@@ -100,7 +102,14 @@ const SavedTrips = ({user}) => {
             <h3><b>{location.city}</b></h3>
             <ul>
                 {chosenActivities.filter(a => a.location_id === location.location_id)
-                    .map(a => <li key={a.activity_id}>{a.name} (${a.cost})</li>)}
+                    .map(a => <li key={a.activity_id}>
+                        <a href={`https://www.google.com/search?q=${a.name}`}
+                           target="_blank"
+                           rel="noreferrer">
+                            {a.name}
+                        </a>
+                        <span className={"activity-info"}>{a.type} / ${a.cost} / {a.co2_emissions}kg</span>
+                    </li>)}
             </ul>
             <br/>
         </div>

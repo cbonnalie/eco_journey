@@ -59,7 +59,8 @@ const Itinerary = ({formData, locations, user}) => {
         uniqueStates.map(state => ({
             state,
             activityCount: getActivityCountByState(state),
-            distance: getDistanceToState(state)
+            distance: getDistanceToState(state),
+            geography: validLocations.find(location => location.state === state).geographical_feature
         }))
             .sort((a, b) => b.activityCount - a.activityCount || a.distance - b.distance)
             .slice(0, 5), [uniqueStates]
@@ -69,7 +70,7 @@ const Itinerary = ({formData, locations, user}) => {
     useEffect(() => {
         const fetchData = async () => {
             const newTrips = await Promise.all(topFiveStates.map(async (stateObj) => {
-                const {state, distance} = stateObj;
+                const {state, distance, geography} = stateObj;
 
                 const locations = validLocations.filter(
                     location => location.state === state
@@ -83,7 +84,7 @@ const Itinerary = ({formData, locations, user}) => {
 
                 const transportation = await dbFunc.fetchTransportationByDistance(distance)
 
-                return await dbFunc.addTripData(user, state, distance, transportation, activities, locations)
+                return await dbFunc.addTripData(user, state, distance, transportation, activities, locations, geography)
             }))
 
             setTrips(prevTrips => {
@@ -116,6 +117,7 @@ const Itinerary = ({formData, locations, user}) => {
         <div className="trip-header">
             <h1>
                 <b>{index + 1}: {getStateFullName(state)}</b>
+                <p className={"state-geography"}>because you chose {trip.geography}</p>
             </h1>
             <button
                 onClick={() => saveTrip(trip)}
@@ -151,7 +153,7 @@ const Itinerary = ({formData, locations, user}) => {
 
     const ActivityList = ({location, chosenActivities}) => (
         <div>
-            <h3><b><u>{location.city}</u></b></h3>
+            <h3><b>{location.city}</b></h3>
             <ul>
                 {chosenActivities
                     .filter(a => a.location_id === location.location_id)
@@ -161,7 +163,8 @@ const Itinerary = ({formData, locations, user}) => {
                                target="_blank"
                                rel="noreferrer">
                                 {a.name}
-                            </a> (${a.cost})
+                            </a>
+                            <span className={"activity-info"}>{a.type} / ${a.cost} / {a.co2_emissions}kg</span>
                         </li>
                     ))}
             </ul>
