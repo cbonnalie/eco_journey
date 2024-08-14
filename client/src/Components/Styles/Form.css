@@ -41,7 +41,6 @@
     position: absolute;
     right: 20px;
     top: 50%;
-    transform: translateY(-50%);
     font-size: 16px;
 }
 
@@ -102,9 +101,7 @@
     margin: 10px 0;
 }
 
-.input-box input,
-.activity-option input,
-.geography-option input {
+.input-box input, .activity-option input, .geography-option input {
     margin-top: .5em;
     margin-bottom: .5em;
     margin-right: .5em;

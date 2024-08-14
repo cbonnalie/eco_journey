@@ -56,6 +56,24 @@
     margin-bottom: .5em;
 }
 
+.itinerary-container h3 {
+    margin-bottom: .2em;
+}
+
+.itinerary-container h3 u {
+    text-decoration-thickness: 3px;
+}
+
+.itinerary-container a {
+    color: white;
+    text-decoration: none;
+}
+
+.itinerary-container a:hover {
+    color: #cdb633;
+    text-decoration: none;
+}
+
 .trip-header {
     display: flex;
     justify-content: space-between;

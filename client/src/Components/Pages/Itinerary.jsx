@@ -11,16 +11,16 @@ const Itinerary = ({formData, locations, user}) => {
     const [trips, setTrips] = useState([])
     const [validActivities, setValidActivities] = useState([])
     const [saveButtonEnabled, setSaveButtonEnabled] = useState({})
-    
+
     const validLocations = useMemo(() =>
         locations.filter(location =>
             formData.geography.includes(location.geographical_feature) &&
             validActivities.some(activity => activity.location_id === location.location_id)
         ), [locations, validActivities, formData.geography]
     )
-    
+
     const uniqueStates = useMemo(() =>
-        [...new Set(validLocations.map(location => location.state))], 
+            [...new Set(validLocations.map(location => location.state))],
         [validLocations]
     )
 
@@ -38,7 +38,7 @@ const Itinerary = ({formData, locations, user}) => {
             ).length,
         [validActivities, validLocations]
     )
-    
+
     const getDistanceToState = useCallback(state => {
         const stateLocations = validLocations.filter(location => location.state === state)
         if (stateLocations.length === 0) return Infinity
@@ -55,21 +55,21 @@ const Itinerary = ({formData, locations, user}) => {
         return Math.min(...distances)
     }, [validLocations, formData.location])
 
-    const topFiveStates = useMemo(() => 
+    const topFiveStates = useMemo(() =>
         uniqueStates.map(state => ({
             state,
             activityCount: getActivityCountByState(state),
             distance: getDistanceToState(state)
         }))
-        .sort((a, b) => b.activityCount - a.activityCount || a.distance - b.distance)
-        .slice(0, 5), [uniqueStates]
+            .sort((a, b) => b.activityCount - a.activityCount || a.distance - b.distance)
+            .slice(0, 5), [uniqueStates]
     )
-    
+
     // fetch all data needed for the top 5 states in order to store it in the database
     useEffect(() => {
         const fetchData = async () => {
             const newTrips = await Promise.all(topFiveStates.map(async (stateObj) => {
-                const { state, distance } = stateObj;
+                const {state, distance} = stateObj;
 
                 const locations = validLocations.filter(
                     location => location.state === state
@@ -117,11 +117,11 @@ const Itinerary = ({formData, locations, user}) => {
             <h1>
                 <b>{index + 1}: {getStateFullName(state)}</b>
             </h1>
-                <button
-                    onClick={() => saveTrip(trip)}
-                    disabled={saveButtonEnabled[trip.trip_id]}
-                ><b>Save Trip</b>
-                </button>
+            <button
+                onClick={() => saveTrip(trip)}
+                disabled={saveButtonEnabled[trip.trip_id]}
+            ><b>Save Trip</b>
+            </button>
         </div>
     )
 
@@ -151,10 +151,19 @@ const Itinerary = ({formData, locations, user}) => {
 
     const ActivityList = ({location, chosenActivities}) => (
         <div>
-            <h3><b>{location.city}</b></h3>
+            <h3><b><u>{location.city}</u></b></h3>
             <ul>
-                {chosenActivities.filter(a => a.location_id === location.location_id)
-                    .map(a => <li key={a.activity_id}>{a.name} (${a.cost})</li>)}
+                {chosenActivities
+                    .filter(a => a.location_id === location.location_id)
+                    .map(a => (
+                        <li key={a.activity_id}>
+                            <a href={`https://www.google.com/search?q=${a.name}`}
+                               target="_blank"
+                               rel="noreferrer">
+                                {a.name}
+                            </a> (${a.cost})
+                        </li>
+                    ))}
             </ul>
             <br/>
         </div>
