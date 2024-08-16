@@ -13,18 +13,6 @@ app.get("/api", (req, res) => {
     res.json({message: "API is working"})
 })
 
-// Register a new user
-app.post("/api/register", async (req, res) => {
-    try {
-        const userData = req.body
-        const result = await db.addUser(userData)
-        res.status(201).json({message: "User registered successfully", user_id: result.insertId})
-    } catch (error) {
-        console.error("Error registering user:", error)
-        res.status(500).json({message: "Error registering user"})
-    }
-})
-
 // Get all activities of the requested type
 app.get("/api/activities", async (req, res) => {
     try {
@@ -32,7 +20,6 @@ app.get("/api/activities", async (req, res) => {
         const activities = await db.getActivitiesByTypes(types)
         res.json(activities)
     } catch (error) {
-        console.error("Error fetching activities:", error)
         res.status(500).json({message: "Error fetching activities"})
     }
 })
@@ -43,7 +30,6 @@ app.get("/api/locations", async (req, res) => {
         const locations = await db.getLocations()
         res.json(locations)
     } catch (error) {
-        console.error("Error fetching locations:", error)
         res.status(500).json({message: "Error fetching locations"})
     }
 })
@@ -54,7 +40,6 @@ app.get("/api/activity-types", async (req, res) => {
         const types = await db.getAllActivityTypes()
         res.json(types)
     } catch (error) {
-        console.error("Error fetching activity types:", error)
         res.status(500).json({message: "Error fetching activity types"})
     }
 })
@@ -65,7 +50,6 @@ app.get("/api/geography-types", async (req, res) => {
         const types = await db.getGeographyTypes()
         res.json(types)
     } catch (error) {
-        console.error("Error fetching geography types:", error)
         res.status(500).json({message: "Error fetching geography types"})
     }
 })
@@ -77,7 +61,6 @@ app.get("/api/transportation", async (req, res) => {
         const transportation = await db.getTransportationByName(name)
         res.json(transportation)
     } catch (error) {
-        console.error("Error fetching transportation types:", error)
         res.status(500).json({message: "Error fetching transportation types"})
     }
 })
@@ -89,7 +72,6 @@ app.get("/api/saved-trips/:user_id", async (req, res) => {
         const savedTrips = await db.getSavedTrips(user_id)
         res.json(savedTrips)
     } catch (error) {
-        console.error("Error fetching saved trips:", error)
         res.status(500).json({message: "Error fetching saved trips"})
     }
 })
@@ -101,7 +83,6 @@ app.get("/api/activities-by-trip-id", async (req, res) => {
         const activities = await db.getActivitiesByTripId(trip_id)
         res.json(activities)
     } catch (error) {
-        console.error("Error fetching activities by trip ID:", error)
         res.status(500).json({message: "Error fetching activities by trip ID"})
     }
 })
@@ -113,7 +94,6 @@ app.get("/api/locations-by-trip-id", async (req, res) => {
         const locations = await db.getLocationsByTripId(trip_id)
         res.json(locations)
     } catch (error) {
-        console.error("Error fetching locations by trip ID:", error)
         res.status(500).json({message: "Error fetching locations by trip ID"})
     }
 })
@@ -125,7 +105,6 @@ app.get("/api/transportation-by-trip-id", async (req, res) => {
         const transportation = await db.getTransportationByTripId(trip_id)
         res.json(transportation)
     } catch (error) {
-        console.error("Error fetching transportation by trip ID:", error)
         res.status(500).json({message: "Error fetching transportation by trip ID"})
     }
 })
@@ -138,7 +117,6 @@ app.get("/api/username-email-taken", async (req, res) => {
         const taken = await db.usernameEmailTaken(username, email)
         res.json({taken})
     } catch (error) {
-        console.error("Error checking username/email:", error)
         res.status(500).json({message: "Error checking username/email"})
     }
 })
@@ -155,8 +133,18 @@ app.get("/api/login", async (req, res) => {
             res.status(401).json({message: "Invalid username or password"})
         }
     } catch (error) {
-        console.error("Error authenticating user:", error)
         res.status(500).json({message: "Error authenticating user"})
+    }
+})
+
+// Register a new user
+app.post("/api/register", async (req, res) => {
+    try {
+        const userData = req.body
+        const result = await db.addUser(userData)
+        res.status(201).json({message: "User registered successfully", user_id: result.insertId})
+    } catch (error) {
+        res.status(500).json({message: "Error registering user"})
     }
 })
 
@@ -167,7 +155,6 @@ app.post("/api/add-trip", async (req, res) => {
         const result = await db.addTrip(tripData)
         res.status(201).json({trip_id: result.insertId})
     } catch (error) {
-        console.error("Error adding trip:", error)
         res.status(500).json({message: "Error adding trip"})
     }
 })
@@ -179,7 +166,6 @@ app.post("/api/add-trip-activities", async (req, res) => {
         await db.addTripActivities(trip_id, activities)
         res.status(201).json({message: "Trip activities added successfully"})
     } catch (error) {
-        console.error("Error adding trip activities:", error)
         res.status(500).json({message: "Error adding trip activities"})
     }
 })
@@ -191,7 +177,6 @@ app.post("/api/add-trip-locations", async (req, res) => {
         await db.addTripLocations(trip_id, locations)
         res.status(201).json({message: "Trip locations added successfully"})
     } catch (error) {
-        console.error("Error adding trip locations:", error)
         res.status(500).json({message: "Error adding trip locations"})
     }
 })
@@ -203,7 +188,6 @@ app.post("/api/add-trip-transportation", async (req, res) => {
         await db.addTripTransportation(trip_id, { transport_id, distance_mi, total_cost, total_emissions })
         res.status(201).json({message: "Trip transportation added successfully"})
     } catch (error) {
-        console.error("Error adding trip transportation:", error)
         res.status(500).json({message: "Error adding trip transportation"})
     }
 })
@@ -215,7 +199,6 @@ app.post("/api/save-trip", async (req, res) => {
         const result = await db.saveTrip(saveData)
         res.status(201).json({message: "Trip saved successfully", saved_id: result.insertId})
     } catch (error) {
-        console.error("Error saving trip:", error)
         res.status(500).json({message: "Error saving trip"})
     }
 })

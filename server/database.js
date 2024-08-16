@@ -225,10 +225,10 @@ export async function getSavedTrips(user_id) {
 export async function getActivitiesByTripId(trip_id) {
     try {
         const [rows] = await pool.query(`
-            SELECT activities.*
-            FROM activities
-            JOIN trip_activities USING (activity_id)
-            WHERE trip_id = ?
+                SELECT activities.*
+                FROM activities
+                JOIN trip_activities USING (activity_id)
+                WHERE trip_id = ?
         `, [trip_id])
         return rows
     } catch (error) {
@@ -308,7 +308,6 @@ export async function authenticateUser(username, password) {
         const passwordMatches = await bcrypt.compare(password, rows.password)
 
         if (passwordMatches) {
-            console.log("db:", rows)
             return rows
         } else {
             return null

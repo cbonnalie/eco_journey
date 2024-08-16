@@ -1,9 +1,0 @@
-into eco_journey/server:
-npm init -y
-touch server.js
-npm i express
-npm i nodemon -D
-npm i mysql2
-
-into eco_journey.client:
-npx create-react-app .
