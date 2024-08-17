@@ -15,6 +15,12 @@ while the server directory contains the Express server.
 To run the application, navigate to /server/.env and replace the value NAME and PASSWORD 
 with your own MySQL credentials.
 
+Ensure that you have Node.js installed on your machine. If not, you can download it from
+https://nodejs.org/en/download/package-manager
+
+Ensure that you have MySQL installed on your machine, and that the ECO_JOURNEY
+is currently in use.
+
 Next, navigate to the root directory and run the following command: npm run install-deps
 
 Once dependencies are installed, run the following command: npm run start
